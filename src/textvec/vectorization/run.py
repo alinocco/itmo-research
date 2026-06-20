@@ -19,11 +19,12 @@ def run_vectorization(
     df: pd.DataFrame,
     cfg: ConfigNode,
     methods: list[str] | None = None,
+    output_dir: str | None = None,
 ) -> dict[str, VectorizationResult]:
     """Vectorize the (preprocessed) corpus with each requested method."""
     set_seed(cfg.project.get("seed", 42))
     methods = methods or list(cfg.vectorization.get("methods", []))
-    out_dir = resolve_path(cfg.vectorization.get("output_dir", "results/embeddings"))
+    out_dir = resolve_path(output_dir or cfg.vectorization.get("output_dir", "results/embeddings"))
     out_dir.mkdir(parents=True, exist_ok=True)
 
     results: dict[str, VectorizationResult] = {}

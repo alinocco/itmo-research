@@ -22,9 +22,9 @@ def tiny_corpus():
     return pd.DataFrame(rows, columns=["doc_id", "topic", "title", "abstract"])
 
 
-def test_preprocess_and_classical_vectorizers(tiny_corpus):
+def test_preprocess_and_classical_vectorizers(tiny_corpus, tmp_path):
     cfg = load_config()
-    clean = preprocess_corpus(tiny_corpus, cfg)
+    clean = preprocess_corpus(tiny_corpus, cfg, output_csv=str(tmp_path / "clean.csv"))
     assert "clean_text" in clean.columns
     assert (clean["n_tokens"] > 0).all()
 
@@ -36,9 +36,9 @@ def test_preprocess_and_classical_vectorizers(tiny_corpus):
         assert np.isfinite(result.embeddings).all()
 
 
-def test_topic_separability_metrics(tiny_corpus):
+def test_topic_separability_metrics(tiny_corpus, tmp_path):
     cfg = load_config()
-    clean = preprocess_corpus(tiny_corpus, cfg)
+    clean = preprocess_corpus(tiny_corpus, cfg, output_csv=str(tmp_path / "clean.csv"))
     vec = build_vectorizer("tfidf", cfg)
     result = vec.fit_transform(clean)
     metrics = topic_separability(result.embeddings, clean["topic"].tolist())

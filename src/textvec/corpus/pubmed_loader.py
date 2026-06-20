@@ -32,16 +32,23 @@ def fetch_pubmed(
         logger.warning("PubMed [%s] '%s': no results", topic, term)
         return []
 
-    # 2) efetch -> full records (MEDLINE XML)
-    with Entrez.efetch(db="pubmed", id=id_list, rettype="abstract", retmode="xml") as handle:
-        records = Entrez.read(handle)
-
+    # 2) efetch -> full records (MEDLINE XML), batched to stay within request limits.
     docs: list[Document] = []
-    for article in records.get("PubmedArticle", []):
+    batch_size = 200
+    for start in range(0, len(id_list), batch_size):
+        batch = id_list[start:start + batch_size]
         try:
-            docs.append(_parse_article(article, topic))
-        except Exception as exc:  # noqa: BLE001 - skip malformed records, keep going
-            logger.debug("Skipping a PubMed record: %s", exc)
+            with Entrez.efetch(db="pubmed", id=batch, rettype="abstract", retmode="xml") as handle:
+                records = Entrez.read(handle)
+        except Exception as exc:  # noqa: BLE001 - skip a failed batch, keep going
+            logger.warning("PubMed efetch batch failed (%d-%d): %s", start, start + len(batch), exc)
+            continue
+        for article in records.get("PubmedArticle", []):
+            try:
+                docs.append(_parse_article(article, topic))
+            except Exception as exc:  # noqa: BLE001 - skip malformed records
+                logger.debug("Skipping a PubMed record: %s", exc)
+
     logger.info("PubMed [%s] '%s': fetched %d documents", topic, term, len(docs))
     return docs
 

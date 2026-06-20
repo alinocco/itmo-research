@@ -30,9 +30,16 @@ def topic_separability(embeddings: np.ndarray, labels: list[str]) -> dict:
 
     if n_topics > 1 and len(labels) > n_topics:
         try:
+            # silhouette is O(n^2); evaluate on a random sample for large corpora.
+            sample_size = min(5000, len(labels)) if len(labels) > 5000 else None
             metrics["silhouette_cosine"] = round(
-                float(silhouette_score(embeddings, labels_arr, metric="cosine")), 4
+                float(silhouette_score(
+                    embeddings, labels_arr, metric="cosine",
+                    sample_size=sample_size, random_state=42,
+                )), 4
             )
+            if sample_size:
+                metrics["silhouette_sample_size"] = sample_size
         except Exception as exc:  # noqa: BLE001
             logger.debug("silhouette failed: %s", exc)
             metrics["silhouette_cosine"] = None
@@ -54,12 +61,14 @@ def run_semantic_analysis(
     df: pd.DataFrame,
     embeddings_by_method: dict[str, np.ndarray],
     cfg: ConfigNode,
+    figures_dir: str | None = None,
+    reports_dir: str | None = None,
 ) -> dict:
     """For every method: compute metrics, build PCA/UMAP projections, save figures."""
     an = cfg.analysis
     seed = cfg.project.get("seed", 42)
-    figures_dir = resolve_path(an.get("figures_dir", "results/figures"))
-    reports_dir = resolve_path(an.get("reports_dir", "results/reports"))
+    figures_dir = resolve_path(figures_dir or an.get("figures_dir", "results/figures"))
+    reports_dir = resolve_path(reports_dir or an.get("reports_dir", "results/reports"))
     figures_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
 

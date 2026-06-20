@@ -10,6 +10,13 @@ logger = get_logger("textvec.vectorization.classical")
 
 
 class TfidfVectorizerWrapper(BaseVectorizer):
+    """TF-IDF kept sparse; optionally reduced with TruncatedSVD (LSA).
+
+    Materializing the full dense matrix does not scale (50k x 20k float32 ~ 4 GB),
+    so when ``svd_components`` is set we go through ``TruncatedSVD`` and never call
+    ``.toarray()`` on the large sparse matrix.
+    """
+
     name = "tfidf"
     input_kind = "clean"
 
@@ -22,6 +29,22 @@ class TfidfVectorizerWrapper(BaseVectorizer):
             min_df=self.params.get("min_df", 2),
         )
         matrix = vec.fit_transform(data)
+        self.params["vocab_size"] = matrix.shape[1]
+
+        svd_components = self.params.get("svd_components")
+        if svd_components:
+            from sklearn.decomposition import TruncatedSVD
+
+            n_components = min(int(svd_components), matrix.shape[1] - 1, matrix.shape[0] - 1)
+            svd = TruncatedSVD(n_components=n_components, random_state=self.params.get("seed", 42))
+            reduced = svd.fit_transform(matrix)
+            self.params["actual_dim"] = int(reduced.shape[1])
+            self.params["svd_explained_variance"] = round(
+                float(svd.explained_variance_ratio_.sum()), 4
+            )
+            return reduced
+
+        # No SVD requested: only safe to densify for small vocabularies / corpora.
         self.params["actual_dim"] = matrix.shape[1]
         return matrix.toarray()
 

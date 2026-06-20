@@ -14,6 +14,10 @@ _MULTISPACE_RE = re.compile(r"\s+")
 # Keep letters/digits/whitespace/basic apostrophe-hyphen; drop the rest.
 _NONTEXT_RE = re.compile(r"[^\w\s'-]", flags=re.UNICODE)
 _DIGIT_RE = re.compile(r"\b\d+\b")
+# Line-break hyphenation: "repre-\nsentation" -> "representation".
+_HYPHEN_BREAK_RE = re.compile(r"(\w)-\s*\n\s*(\w)")
+# A heading that marks the start of the reference list (last occurrence wins).
+_REFERENCES_RE = re.compile(r"\n\s*(references|bibliography|references and notes)\s*\n", flags=re.IGNORECASE)
 
 
 def strip_html(text: str) -> str:
@@ -51,6 +55,36 @@ def remove_punctuation(text: str) -> str:
 
 def normalize_whitespace(text: str) -> str:
     return _MULTISPACE_RE.sub(" ", text).strip()
+
+
+def dehyphenate(text: str) -> str:
+    """Join words split across line breaks by a hyphen."""
+    return _HYPHEN_BREAK_RE.sub(r"\1\2", text)
+
+
+def cut_references(text: str) -> str:
+    """Drop everything from the last 'References'/'Bibliography' heading onward."""
+    matches = list(_REFERENCES_RE.finditer(text))
+    if not matches:
+        return text
+    # Only cut if the heading sits in the back half (avoids cutting a mention early on).
+    last = matches[-1]
+    if last.start() > len(text) * 0.5:
+        return text[: last.start()]
+    return text
+
+
+def clean_scientific_fulltext(text: str) -> str:
+    """Structural cleanup applied to raw full text before tokenization.
+
+    Removes the reference list, fixes line-break hyphenation and normalizes
+    whitespace, but keeps case/punctuation for the main preprocessing stage.
+    """
+    if not isinstance(text, str) or not text:
+        return ""
+    text = dehyphenate(text)
+    text = cut_references(text)
+    return normalize_whitespace(text)
 
 
 def clean_text(

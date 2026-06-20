@@ -6,22 +6,42 @@ project:
   language: en            # en | ru  (corpus is English scientific articles: ArXiv / PubMed)
   device: auto            # auto | cpu | cuda
 
+# Experiment "variants" let us compare what counts as the document text.
+# Each variant has its own source CSV, the text fields it concatenates, and
+# isolated output folders so abstract and full_text results never overwrite.
+experiment:
+  variant: abstract       # default variant used by the CLI (override with --variant)
+  variants:
+    abstract:             # headline run on the full corpus (title + abstract)
+      source_csv: data/processed/corpus.csv
+      text_fields: [title, abstract]
+    full_text:            # full-text run on the fetched subset
+      source_csv: data/processed/corpus_fulltext.csv
+      text_fields: [title, full_text]
+    abstract_subset:      # abstract on the SAME subset, for a fair comparison
+      source_csv: data/processed/corpus_fulltext.csv
+      text_fields: [title, abstract]
+  fulltext:
+    per_topic: 150        # documents per topic to attempt full-text fetch for
+
 corpus:
   sources:
     arxiv:
       enabled: true
       # Each query maps roughly to a "topic" used as a metadata label.
       queries:
-        - {topic: "machine_learning", search: "cat:cs.LG", max_results: 80}
-        - {topic: "computation_language", search: "cat:cs.CL", max_results: 80}
-        - {topic: "astrophysics", search: "cat:astro-ph.GA", max_results: 80}
-        - {topic: "quantitative_biology", search: "cat:q-bio.NC", max_results: 80}
+        - {topic: "machine_learning", search: "cat:cs.LG", max_results: 2000}
+        - {topic: "computation_language", search: "cat:cs.CL", max_results: 2000}
+        - {topic: "astrophysics", search: "cat:astro-ph.GA", max_results: 2000}
+        - {topic: "quantitative_biology", search: "cat:q-bio.NC", max_results: 2000}
+        - {topic: "cryptography_security", search: "cat:cs.CR", max_results: 2000}
     pubmed:
       enabled: true
       email: "research@example.com"   # required by NCBI Entrez; replace with a real address
       queries:
-        - {topic: "oncology", term: "cancer immunotherapy", max_results: 80}
-        - {topic: "cardiology", term: "myocardial infarction treatment", max_results: 80}
+        - {topic: "oncology", term: "cancer immunotherapy", max_results: 2000}
+        - {topic: "cardiology", term: "myocardial infarction treatment", max_results: 2000}
+        - {topic: "neurology", term: "alzheimer disease", max_results: 2000}
   raw_dir: data/raw
   corpus_csv: data/processed/corpus.csv
   corpus_json: data/processed/corpus.json
@@ -47,6 +67,7 @@ vectorization:
     max_features: 20000
     ngram_range: [1, 2]
     min_df: 2
+    svd_components: 300      # LSA reduction; keeps TF-IDF dense+small and scalable. null = dense bag-of-ngrams
   fasttext:
     vector_size: 200
     window: 5
@@ -67,6 +88,8 @@ vectorization:
     batch_size: 16
     max_seq_length: 512
     normalize_embeddings: true
+    chunk_long_docs: true     # window long docs + mean-pool (no-op for short abstracts)
+    chunk_size_words: 350
   output_dir: results/embeddings
 
 analysis:

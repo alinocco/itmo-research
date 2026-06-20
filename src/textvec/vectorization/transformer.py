@@ -43,15 +43,55 @@ class TransformerVectorizer(BaseVectorizer):
             model.max_seq_length = int(max_seq)
 
         prefix = self._query_prefix()
-        texts = [prefix + t for t in data] if prefix else list(data)
 
-        embeddings = model.encode(
-            texts,
-            batch_size=self.params.get("batch_size", 16),
-            convert_to_numpy=True,
-            normalize_embeddings=self.params.get("normalize_embeddings", True),
-            show_progress_bar=True,
-        )
+        if self.params.get("chunk_long_docs"):
+            embeddings = self._encode_chunked(model, data, prefix)
+        else:
+            texts = [prefix + t for t in data] if prefix else list(data)
+            embeddings = model.encode(
+                texts,
+                batch_size=self.params.get("batch_size", 16),
+                convert_to_numpy=True,
+                normalize_embeddings=self.params.get("normalize_embeddings", True),
+                show_progress_bar=True,
+            )
         self.params["actual_dim"] = int(embeddings.shape[1])
         self.params["resolved_model"] = self.model_name
         return np.asarray(embeddings, dtype=np.float32)
+
+    def _encode_chunked(self, model, data, prefix: str) -> np.ndarray:
+        """Split long documents into word windows, encode all chunks at once,
+        then mean-pool chunk vectors back into one embedding per document."""
+        chunk_words = int(self.params.get("chunk_size_words", 350))
+        all_chunks: list[str] = []
+        owner: list[int] = []  # chunk index -> document index
+        for doc_idx, text in enumerate(data):
+            words = str(text).split()
+            if not words:
+                words = [""]
+            for start in range(0, len(words), chunk_words):
+                chunk = " ".join(words[start:start + chunk_words])
+                all_chunks.append(prefix + chunk if prefix else chunk)
+                owner.append(doc_idx)
+
+        chunk_emb = model.encode(
+            all_chunks,
+            batch_size=self.params.get("batch_size", 16),
+            convert_to_numpy=True,
+            normalize_embeddings=False,  # normalize after pooling
+            show_progress_bar=True,
+        )
+
+        dim = chunk_emb.shape[1]
+        doc_emb = np.zeros((len(data), dim), dtype=np.float32)
+        counts = np.zeros(len(data), dtype=np.int64)
+        for vec, doc_idx in zip(chunk_emb, owner):
+            doc_emb[doc_idx] += vec
+            counts[doc_idx] += 1
+        doc_emb /= np.maximum(counts[:, None], 1)
+
+        if self.params.get("normalize_embeddings", True):
+            norms = np.linalg.norm(doc_emb, axis=1, keepdims=True)
+            doc_emb = doc_emb / np.maximum(norms, 1e-12)
+        self.params["n_chunks"] = len(all_chunks)
+        return doc_emb

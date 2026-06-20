@@ -18,7 +18,7 @@ def build_vectorizer(method: str, cfg: ConfigNode) -> BaseVectorizer:
     device = cfg.project.get("device", "auto")
 
     if method == "tfidf":
-        return TfidfVectorizerWrapper(**vc.tfidf.to_dict())
+        return TfidfVectorizerWrapper(seed=seed, **vc.tfidf.to_dict())
 
     if method == "fasttext":
         return FastTextVectorizer(seed=seed, **vc.fasttext.to_dict())
@@ -38,6 +38,8 @@ def build_vectorizer(method: str, cfg: ConfigNode) -> BaseVectorizer:
             batch_size=tr.get("batch_size", 16),
             max_seq_length=tr.get("max_seq_length", 512),
             normalize_embeddings=tr.get("normalize_embeddings", True),
+            chunk_long_docs=tr.get("chunk_long_docs", False),
+            chunk_size_words=tr.get("chunk_size_words", 350),
         )
 
     raise ValueError(f"Unknown vectorization method: '{method}'. Available: {AVAILABLE_METHODS}")

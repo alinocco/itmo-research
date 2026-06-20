@@ -128,8 +128,17 @@ def build_document_text(df: pd.DataFrame, text_fields: list[str]) -> pd.Series:
     return text
 
 
-def preprocess_corpus(df: pd.DataFrame, cfg: ConfigNode) -> pd.DataFrame:
-    """Run the full pipeline over a corpus DataFrame and persist the result."""
+def preprocess_corpus(
+    df: pd.DataFrame,
+    cfg: ConfigNode,
+    text_fields: list[str] | None = None,
+    output_csv: str | None = None,
+) -> pd.DataFrame:
+    """Run the full pipeline over a corpus DataFrame and persist the result.
+
+    ``text_fields`` / ``output_csv`` override the config defaults so the same
+    code serves different experiment variants (abstract vs full_text).
+    """
     pp = cfg.preprocessing
     preprocessor = TextPreprocessor(
         spacy_model=pp.get("spacy_model", "en_core_web_sm"),
@@ -146,8 +155,9 @@ def preprocess_corpus(df: pd.DataFrame, cfg: ConfigNode) -> pd.DataFrame:
         extra_stopwords=list(pp.get("extra_stopwords", []) or []),
     )
 
-    raw_text = build_document_text(df, list(pp.get("text_fields", ["title", "abstract"])))
-    logger.info("Preprocessing %d documents...", len(df))
+    fields = text_fields or list(pp.get("text_fields", ["title", "abstract"]))
+    raw_text = build_document_text(df, fields)
+    logger.info("Preprocessing %d documents (fields=%s)...", len(df), fields)
     tokens = preprocessor.process_batch(raw_text.tolist())
 
     out = df.copy()
@@ -160,7 +170,7 @@ def preprocess_corpus(df: pd.DataFrame, cfg: ConfigNode) -> pd.DataFrame:
     out = out[out["n_tokens"] > 0].reset_index(drop=True)
     logger.info("Preprocessing done: %d documents kept (%d empty removed)", len(out), before - len(out))
 
-    out_path = resolve_path(pp.get("output_csv", "data/processed/corpus_clean.csv"))
+    out_path = resolve_path(output_csv or pp.get("output_csv", "data/processed/corpus_clean.csv"))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     # Persist tokens as space-joined string for CSV friendliness.
     save_df = out.copy()

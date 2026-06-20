@@ -15,6 +15,7 @@ DOCUMENT_FIELDS = [
     "topic",
     "title",
     "abstract",
+    "full_text",
     "authors",
     "published",
     "categories",
@@ -32,6 +33,7 @@ class Document:
     topic: str                # human-readable topical label from the query
     title: str
     abstract: str
+    full_text: str = ""       # populated on demand by the full-text fetcher
     authors: list[str] = field(default_factory=list)
     published: str = ""       # ISO date string (YYYY-MM-DD) when available
     categories: list[str] = field(default_factory=list)
