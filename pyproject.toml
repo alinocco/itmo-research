@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "textvec"
+version = "0.1.0"
+description = "Research pipeline for text vectorization and semantic-space analysis of scientific articles"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Alina Mukhomediarova" }]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+textvec = "textvec.cli:main"
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+line-length = 100

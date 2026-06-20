@@ -1,0 +1,82 @@
+# Default configuration for the text-vectorization research pipeline.
+# Stages follow task.md (Semester II): corpus -> preprocessing -> vectorization -> semantic-space analysis.
+
+project:
+  seed: 42
+  language: en            # en | ru  (corpus is English scientific articles: ArXiv / PubMed)
+  device: auto            # auto | cpu | cuda
+
+corpus:
+  sources:
+    arxiv:
+      enabled: true
+      # Each query maps roughly to a "topic" used as a metadata label.
+      queries:
+        - {topic: "machine_learning", search: "cat:cs.LG", max_results: 80}
+        - {topic: "computation_language", search: "cat:cs.CL", max_results: 80}
+        - {topic: "astrophysics", search: "cat:astro-ph.GA", max_results: 80}
+        - {topic: "quantitative_biology", search: "cat:q-bio.NC", max_results: 80}
+    pubmed:
+      enabled: true
+      email: "research@example.com"   # required by NCBI Entrez; replace with a real address
+      queries:
+        - {topic: "oncology", term: "cancer immunotherapy", max_results: 80}
+        - {topic: "cardiology", term: "myocardial infarction treatment", max_results: 80}
+  raw_dir: data/raw
+  corpus_csv: data/processed/corpus.csv
+  corpus_json: data/processed/corpus.json
+
+preprocessing:
+  spacy_model: en_core_web_sm
+  lowercase: true
+  remove_html: true
+  remove_urls: true
+  remove_emails: true
+  remove_numbers: false
+  strip_punctuation: true
+  min_token_len: 2
+  lemmatize: true
+  remove_stopwords: true
+  extra_stopwords: []
+  text_fields: [title, abstract]   # fields concatenated to form the document text
+  output_csv: data/processed/corpus_clean.csv
+
+vectorization:
+  methods: [tfidf, fasttext, doc2vec, bert, sbert, bge-m3, e5, gte]
+  tfidf:
+    max_features: 20000
+    ngram_range: [1, 2]
+    min_df: 2
+  fasttext:
+    vector_size: 200
+    window: 5
+    min_count: 2
+    epochs: 20
+  doc2vec:
+    vector_size: 200
+    window: 5
+    min_count: 2
+    epochs: 40
+  transformers:
+    models:
+      bert: bert-base-uncased
+      sbert: sentence-transformers/all-MiniLM-L6-v2
+      bge-m3: BAAI/bge-m3
+      e5: intfloat/multilingual-e5-base
+      gte: thenlper/gte-base
+    batch_size: 16
+    max_seq_length: 512
+    normalize_embeddings: true
+  output_dir: results/embeddings
+
+analysis:
+  reducers: [pca, umap]
+  pca:
+    n_components: 2
+  umap:
+    n_components: 2
+    n_neighbors: 15
+    min_dist: 0.1
+    metric: cosine
+  figures_dir: results/figures
+  reports_dir: results/reports
