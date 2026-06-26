@@ -6,6 +6,30 @@ from .schema import Document
 
 logger = get_logger("textvec.corpus.pubmed")
 
+# NCBI PubMed [Language] filter values (https://www.ncbi.nlm.nih.gov/books/NBK3827/)
+_PUBMED_LANGUAGE = {
+    "en": "english",
+    "ru": "russian",
+    "de": "german",
+    "fr": "french",
+    "es": "spanish",
+    "zh": "chinese",
+    "ja": "japanese",
+    "pt": "portuguese",
+    "it": "italian",
+    "ko": "korean",
+    "ar": "arabic",
+}
+
+
+def _build_search_term(term: str, language: str | None) -> str:
+    """Append a PubMed language filter when requested."""
+    if not language:
+        return term
+    lang = language.lower().strip()
+    pubmed_lang = _PUBMED_LANGUAGE.get(lang, lang)
+    return f"({term}) AND {pubmed_lang}[Language]"
+
 
 def fetch_pubmed(
     topic: str,
@@ -13,10 +37,13 @@ def fetch_pubmed(
     max_results: int = 100,
     email: str = "research@example.com",
     api_key: str | None = None,
+    language: str | None = None,
 ) -> list[Document]:
     """Fetch up to ``max_results`` PubMed records matching ``term``.
 
     NCBI requires a contact ``email``; an ``api_key`` raises the rate limit.
+    When ``language`` is set (e.g. ``"ru"``), results are restricted via
+  ``{language}[Language]`` in the Entrez query.
     """
     from Bio import Entrez  # lazy import
 
@@ -24,12 +51,14 @@ def fetch_pubmed(
     if api_key:
         Entrez.api_key = api_key
 
+    search_term = _build_search_term(term, language)
+
     # 1) esearch -> list of PMIDs
-    with Entrez.esearch(db="pubmed", term=term, retmax=max_results, sort="date") as handle:
+    with Entrez.esearch(db="pubmed", term=search_term, retmax=max_results, sort="date") as handle:
         search_results = Entrez.read(handle)
     id_list = search_results.get("IdList", [])
     if not id_list:
-        logger.warning("PubMed [%s] '%s': no results", topic, term)
+        logger.warning("PubMed [%s] '%s' (lang=%s): no results", topic, term, language or "any")
         return []
 
     # 2) efetch -> full records (MEDLINE XML), batched to stay within request limits.
@@ -49,7 +78,10 @@ def fetch_pubmed(
             except Exception as exc:  # noqa: BLE001 - skip malformed records
                 logger.debug("Skipping a PubMed record: %s", exc)
 
-    logger.info("PubMed [%s] '%s': fetched %d documents", topic, term, len(docs))
+    logger.info(
+        "PubMed [%s] '%s' (lang=%s): fetched %d documents",
+        topic, term, language or "any", len(docs),
+    )
     return docs
 
 
@@ -64,6 +96,9 @@ def _parse_article(article: dict, topic: str) -> Document:
     published = _extract_date(art)
     categories = [_to_text(mh["DescriptorName"]) for mh in medline.get("MeshHeadingList", [])]
 
+    lang_raw = art.get("Language", "")
+    doc_lang = _normalize_language(lang_raw) if lang_raw else "en"
+
     return Document(
         doc_id=f"pubmed:{pmid}",
         source="pubmed",
@@ -74,8 +109,27 @@ def _parse_article(article: dict, topic: str) -> Document:
         published=published,
         categories=categories,
         url=f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
-        language="en",
+        language=doc_lang,
     )
+
+
+def _normalize_language(value) -> str:
+    """Map PubMed language strings to ISO 639-1 codes where possible."""
+    text = str(value).strip().lower()
+    inv = {v: k for k, v in _PUBMED_LANGUAGE.items()}
+    if text in inv:
+        return inv[text]
+    aliases = {
+        "eng": "en", "english": "en",
+        "rus": "ru", "russian": "ru",
+        "deu": "de", "ger": "de", "german": "de",
+        "fra": "fr", "fre": "fr", "french": "fr",
+        "spa": "es", "spanish": "es",
+        "zho": "zh", "chi": "zh", "chinese": "zh",
+        "jpn": "ja", "japanese": "ja",
+        "por": "pt", "portuguese": "pt",
+    }
+    return aliases.get(text, text[:2] if len(text) >= 2 else "unknown")
 
 
 def _to_text(value) -> str:

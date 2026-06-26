@@ -74,6 +74,7 @@ def run_semantic_analysis(
 
     labels = df["topic"].astype(str).tolist() if "topic" in df.columns else ["all"] * len(df)
     reducers = list(an.get("reducers", ["pca", "umap"]))
+    color_by = list(an.get("color_by", ["topic"]))
     summary: dict[str, dict] = {}
 
     for method, emb in embeddings_by_method.items():
@@ -88,14 +89,29 @@ def run_semantic_analysis(
             except Exception as exc:  # noqa: BLE001
                 logger.error("Reducer '%s' failed for '%s': %s", r, method, exc)
                 continue
-            fig_path = figures_dir / f"{method}_{r}.png"
-            scatter_2d(coords, labels, f"{method.upper()} - {r.upper()} projection", fig_path)
-            figures[r] = str(fig_path)
+            for color_field in color_by:
+                color_labels = _color_labels(df, color_field)
+                suffix = "" if color_field == "topic" else f"_{color_field}"
+                fig_path = figures_dir / f"{method}_{r}{suffix}.png"
+                legend = color_field if color_field != "topic" else "topic"
+                scatter_2d(
+                    coords, color_labels,
+                    f"{method.upper()} - {r.upper()} ({legend})",
+                    fig_path,
+                    legend_title=legend,
+                )
+                figures[f"{r}{suffix}"] = str(fig_path)
 
         summary[method] = {"metrics": metrics, "figures": figures}
 
     _save_summary(summary, reports_dir)
     return summary
+
+
+def _color_labels(df: pd.DataFrame, field: str) -> list[str]:
+    if field in df.columns:
+        return df[field].fillna("unknown").astype(str).tolist()
+    return ["all"] * len(df)
 
 
 def _reducer_params(an: ConfigNode, reducer: str, seed: int) -> dict:

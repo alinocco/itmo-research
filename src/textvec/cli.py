@@ -71,7 +71,8 @@ def cmd_collect(cfg, args) -> pd.DataFrame:
 
 def cmd_stats(cfg, args) -> dict:
     df = _load_csv(cfg.corpus.corpus_csv)
-    summary = corpus_statistics(df)
+    sample_lang = int(cfg.analysis.get("language_sample", 200))
+    summary = corpus_statistics(df, sample_lang=sample_lang)
     print_statistics(summary)
     reports_dir = resolve_path(cfg.analysis.get("reports_dir", "results/reports"))
     save_statistics(summary, reports_dir / "corpus_stats.json")

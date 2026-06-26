@@ -25,6 +25,7 @@ def corpus_statistics(df: pd.DataFrame, sample_lang: int = 200) -> dict:
     """Compute volume and length characteristics of the corpus.
 
     Language is detected on a sample (``sample_lang`` docs) to keep it fast.
+    When a ``language`` metadata column is present it is also summarized directly.
     """
     text = (df["title"].fillna("") + ". " + df["abstract"].fillna("")).str.strip()
     word_counts = text.str.split().map(len)
@@ -49,6 +50,8 @@ def corpus_statistics(df: pd.DataFrame, sample_lang: int = 200) -> dict:
             "mean": round(float(char_counts.mean()), 2) if len(df) else 0.0,
         },
     }
+    if "language" in df.columns:
+        summary["by_language"] = df["language"].fillna("unknown").astype(str).str.lower().value_counts().to_dict()
     return summary
 
 
@@ -69,3 +72,5 @@ def print_statistics(summary: dict) -> None:
                 summary["words"]["mean"], summary["words"]["median"],
                 summary["words"]["min"], summary["words"]["max"])
     logger.info("  language (sample): %s", summary["language_sample"])
+    if "by_language" in summary:
+        logger.info("  by language (metadata): %s", summary["by_language"])

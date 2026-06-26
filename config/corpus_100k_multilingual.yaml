@@ -1,0 +1,181 @@
+# Multilingual corpus (~100k documents) for RTX 4070 / 32 GB RAM.
+#
+# Target mix (before deduplication):
+#   ArXiv (EN)     : 12 topics × 2000 = 24 000
+#   PubMed (EN)    :  8 topics × 2000 = 16 000
+#   PubMed (other) :  8 langs × 4 topics × 2000 = 64 000
+#   Total          : ~104 000  → expect ~95–100k after dedup
+#
+# Languages: en, ru, de, fr, es, zh, ja, pt (+ en from ArXiv)
+#
+# Usage:
+#   python -m textvec collect --config config/corpus_100k_multilingual.yaml
+#   python -m textvec stats   --config config/corpus_100k_multilingual.yaml
+#   python -m textvec preprocess --config config/corpus_100k_multilingual.yaml --variant abstract
+#   python -m textvec vectorize  --config config/corpus_100k_multilingual.yaml --variant abstract --methods e5 bge-m3 sbert
+#   python -m textvec analyze    --config config/corpus_100k_multilingual.yaml --variant abstract
+#
+# Before first run:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   python -m spacy download en_core_web_sm ru_core_news_sm de_core_news_sm
+#   python -m spacy download fr_core_news_sm es_core_news_sm pt_core_news_sm
+
+project:
+  seed: 42
+  language: multilingual     # informational; preprocessing.strategy handles per-doc routing
+  device: cuda               # RTX 4070; use "auto" if unsure
+
+experiment:
+  variant: abstract
+  variants:
+    abstract:
+      source_csv: data/processed/corpus_100k.csv
+      text_fields: [title, abstract]
+    full_text:
+      source_csv: data/processed/corpus_fulltext_100k.csv
+      text_fields: [title, full_text]
+    abstract_subset:
+      source_csv: data/processed/corpus_fulltext_100k.csv
+      text_fields: [title, abstract]
+  fulltext:
+    per_topic: 50            # small subset only; full-text at 100k is impractical
+
+corpus:
+  sources:
+    arxiv:
+      enabled: true
+      queries:
+        - {topic: machine_learning,       search: "cat:cs.LG",           max_results: 2000}
+        - {topic: computation_language,    search: "cat:cs.CL",           max_results: 2000}
+        - {topic: computer_vision,        search: "cat:cs.CV",           max_results: 2000}
+        - {topic: nlp,                    search: "cat:cs.CL AND all:nlp", max_results: 2000}
+        - {topic: robotics,               search: "cat:cs.RO",           max_results: 2000}
+        - {topic: cryptography_security,  search: "cat:cs.CR",           max_results: 2000}
+        - {topic: astrophysics,           search: "cat:astro-ph.GA",     max_results: 2000}
+        - {topic: quantitative_biology,   search: "cat:q-bio.NC",        max_results: 2000}
+        - {topic: statistics,             search: "cat:stat.ML",         max_results: 2000}
+        - {topic: software_engineering,   search: "cat:cs.SE",           max_results: 2000}
+        - {topic: information_theory,     search: "cat:cs.IT",           max_results: 2000}
+        - {topic: quantum_computing,      search: "cat:quant-ph",        max_results: 2000}
+    pubmed:
+      enabled: true
+      email: "research@example.com"        # ← replace in config/secrets.local.yaml
+      api_key: null                        # ← set in config/secrets.local.yaml (10 req/s vs 3)
+      queries:
+        # --- English (16k) ---
+        - {topic: oncology,      term: "cancer immunotherapy",              language: en, max_results: 2000}
+        - {topic: cardiology,    term: "myocardial infarction treatment",     language: en, max_results: 2000}
+        - {topic: neurology,     term: "alzheimer disease",                   language: en, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes mellitus treatment",         language: en, max_results: 2000}
+        - {topic: infectious,    term: "vaccine efficacy clinical trial",     language: en, max_results: 2000}
+        - {topic: oncology,      term: "breast cancer therapy",               language: en, max_results: 2000}
+        - {topic: cardiology,    term: "heart failure management",            language: en, max_results: 2000}
+        - {topic: neurology,     term: "stroke rehabilitation",               language: en, max_results: 2000}
+        # --- Russian (8k) ---
+        - {topic: oncology,      term: "рак иммунотерапия",                   language: ru, max_results: 2000}
+        - {topic: cardiology,    term: "инфаркт миокарда лечение",            language: ru, max_results: 2000}
+        - {topic: neurology,     term: "болезнь альцгеймера",                 language: ru, max_results: 2000}
+        - {topic: endocrinology, term: "сахарный диабет лечение",             language: ru, max_results: 2000}
+        # --- German (8k) ---
+        - {topic: oncology,      term: "Krebs Immuntherapie",                 language: de, max_results: 2000}
+        - {topic: cardiology,    term: "Myokardinfarkt Behandlung",           language: de, max_results: 2000}
+        - {topic: neurology,     term: "Alzheimer Krankheit",                 language: de, max_results: 2000}
+        - {topic: endocrinology, term: "Diabetes mellitus Therapie",          language: de, max_results: 2000}
+        # --- French (8k) ---
+        - {topic: oncology,      term: "cancer immunothérapie",               language: fr, max_results: 2000}
+        - {topic: cardiology,    term: "infarctus du myocarde traitement",    language: fr, max_results: 2000}
+        - {topic: neurology,     term: "maladie Alzheimer",                   language: fr, max_results: 2000}
+        - {topic: endocrinology, term: "diabète sucré traitement",            language: fr, max_results: 2000}
+        # --- Spanish (8k) ---
+        - {topic: oncology,      term: "cáncer inmunoterapia",                language: es, max_results: 2000}
+        - {topic: cardiology,    term: "infarto de miocardio tratamiento",    language: es, max_results: 2000}
+        - {topic: neurology,     term: "enfermedad de Alzheimer",             language: es, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes mellitus tratamiento",       language: es, max_results: 2000}
+        # --- Chinese (8k) ---
+        - {topic: oncology,      term: "癌症 免疫治疗",                        language: zh, max_results: 2000}
+        - {topic: cardiology,    term: "心肌梗死 治疗",                        language: zh, max_results: 2000}
+        - {topic: neurology,     term: "阿尔茨海默病",                         language: zh, max_results: 2000}
+        - {topic: endocrinology, term: "糖尿病 治疗",                          language: zh, max_results: 2000}
+        # --- Japanese (8k) ---
+        - {topic: oncology,      term: "がん 免疫療法",                         language: ja, max_results: 2000}
+        - {topic: cardiology,    term: "心筋梗塞 治療",                         language: ja, max_results: 2000}
+        - {topic: neurology,     term: "アルツハイマー病",                      language: ja, max_results: 2000}
+        - {topic: endocrinology, term: "糖尿病 治療",                           language: ja, max_results: 2000}
+        # --- Portuguese (8k) ---
+        - {topic: oncology,      term: "câncer imunoterapia",                 language: pt, max_results: 2000}
+        - {topic: cardiology,    term: "infarto do miocárdio tratamento",     language: pt, max_results: 2000}
+        - {topic: neurology,     term: "doença de Alzheimer",                 language: pt, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes mellitus tratamento",        language: pt, max_results: 2000}
+  raw_dir: data/raw
+  corpus_csv: data/processed/corpus_100k.csv
+  corpus_json: data/processed/corpus_100k.json
+
+preprocessing:
+  strategy: multilingual       # route each document to a language-specific spaCy model
+  spacy_models:
+    en: en_core_web_sm
+    ru: ru_core_news_sm
+    de: de_core_news_sm
+    fr: fr_core_news_sm
+    es: es_core_news_sm
+    pt: pt_core_news_sm
+  # zh, ja: no spaCy model → clean-only + character tokens (see pipeline.py)
+  lowercase: true
+  remove_html: true
+  remove_urls: true
+  remove_emails: true
+  remove_numbers: false
+  strip_punctuation: true
+  min_token_len: 1             # allow single CJK characters as tokens
+  lemmatize: true
+  remove_stopwords: true
+  extra_stopwords: []
+  text_fields: [title, abstract]
+  output_csv: data/processed/corpus_clean.csv
+  n_process: 4                 # spaCy parallel workers (≤ CPU cores)
+
+vectorization:
+  # Prioritize multilingual transformer models; run classical methods separately if needed.
+  methods: [tfidf, fasttext, doc2vec, sbert, bge-m3, e5, gte]
+  tfidf:
+    max_features: 50000        # larger vocab for 9 languages
+    ngram_range: [1, 2]
+    min_df: 3
+    svd_components: 300
+  fasttext:
+    vector_size: 200
+    window: 5
+    min_count: 3
+    epochs: 15                 # fewer epochs at scale
+  doc2vec:
+    vector_size: 200
+    window: 5
+    min_count: 3
+    epochs: 30
+  transformers:
+    models:
+      bert: bert-base-multilingual-cased
+      sbert: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      bge-m3: BAAI/bge-m3
+      e5: intfloat/multilingual-e5-base
+      gte: Alibaba-NLP/gte-multilingual-base
+    batch_size: 8              # safe for RTX 4070 12 GB (raise to 16 for sbert/e5 if fits)
+    max_seq_length: 512
+    normalize_embeddings: true
+    chunk_long_docs: true
+    chunk_size_words: 350
+  output_dir: results/embeddings
+
+analysis:
+  reducers: [pca, umap]
+  color_by: [topic, language]  # extra scatter plots colored by language
+  pca:
+    n_components: 2
+  umap:
+    n_components: 2
+    n_neighbors: 30            # slightly larger neighbourhood at 100k scale
+    min_dist: 0.1
+    metric: cosine
+  figures_dir: results/figures
+  reports_dir: results/reports
+  language_sample: 2000        # langdetect sample size for corpus stats

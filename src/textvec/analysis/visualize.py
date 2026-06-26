@@ -17,6 +17,7 @@ def scatter_2d(
     out_path: str | Path,
     *,
     figsize: tuple[int, int] = (9, 7),
+    legend_title: str = "topic",
 ) -> Path:
     """Save a 2D scatter plot colored by ``labels`` (e.g. topic)."""
     import matplotlib
@@ -42,7 +43,7 @@ def scatter_2d(
     ax.set_title(title)
     ax.set_xlabel("dim 1")
     ax.set_ylabel("dim 2")
-    ax.legend(title="topic", fontsize=8, markerscale=1.4, loc="best")
+    ax.legend(title=legend_title, fontsize=8, markerscale=1.4, loc="best")
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)

@@ -37,6 +37,7 @@ def build_corpus(cfg: ConfigNode) -> pd.DataFrame:
                 max_results=q.get("max_results", 100),
                 email=email,
                 api_key=api_key,
+                language=q.get("language"),
             )
 
     df = _to_dataframe(documents)

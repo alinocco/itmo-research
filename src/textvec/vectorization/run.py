@@ -81,7 +81,7 @@ def _save_result(result: VectorizationResult, out_dir: Path) -> None:
 
 
 def _save_doc_ids(df: pd.DataFrame, out_dir: Path) -> None:
-    meta_cols = [c for c in ("doc_id", "topic", "source", "title") if c in df.columns]
+    meta_cols = [c for c in ("doc_id", "topic", "source", "language", "title") if c in df.columns]
     df[meta_cols].to_csv(out_dir / "doc_index.csv", index=False, encoding="utf-8")
 
 

@@ -167,3 +167,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Local secrets (API keys) — never commit
+config/secrets.local.yaml
