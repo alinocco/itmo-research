@@ -59,8 +59,8 @@ activate_venv() {
 }
 
 run_textvec() {
-  log ">>> python -m textvec $*"
-  python -m textvec "$@" --config "$CONFIG" 2>&1 | tee -a "$LOG_FILE"
+  log ">>> python -m textvec --config $CONFIG $*"
+  python -m textvec --config "$CONFIG" "$@" 2>&1 | tee -a "$LOG_FILE"
 }
 
 check_secrets() {
