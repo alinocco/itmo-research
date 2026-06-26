@@ -6,20 +6,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..corpus.language import normalize_language_code
+from ..corpus.language import detect_language_from_text, repair_language_series
 from ..utils import get_logger
 
 logger = get_logger("textvec.analysis.stats")
 
 
 def _detect_language(text: str) -> str:
-    try:
-        from langdetect import DetectorFactory, detect
-
-        DetectorFactory.seed = 0
-        return detect(text) if text.strip() else "unknown"
-    except Exception:  # noqa: BLE001
-        return "unknown"
+    return detect_language_from_text(text)
 
 
 def corpus_statistics(df: pd.DataFrame, sample_lang: int = 200) -> dict:
@@ -52,8 +46,8 @@ def corpus_statistics(df: pd.DataFrame, sample_lang: int = 200) -> dict:
         },
     }
     if "language" in df.columns:
-        langs = df["language"].map(lambda v: normalize_language_code(v, default="unknown"))
-        summary["by_language"] = langs.value_counts().to_dict()
+        text = (df["title"].fillna("") + ". " + df["abstract"].fillna("")).str.strip()
+        summary["by_language"] = repair_language_series(df["language"], text).value_counts().to_dict()
     return summary
 
 

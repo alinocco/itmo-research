@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import ast
+import re
 from typing import Any
+
+_BROKEN_LIST_LANG_RE = re.compile(r"""^\[['"]?([a-z]{2,3})""", re.IGNORECASE)
 
 _ALIASES: dict[str, str] = {
     "eng": "en",
@@ -67,6 +70,9 @@ def normalize_language_code(value: Any, *, default: str = "unknown") -> str:
         return default
 
     if text.startswith("["):
+        match = _BROKEN_LIST_LANG_RE.match(text)
+        if match:
+            return normalize_language_code(match.group(1), default=default)
         try:
             parsed = ast.literal_eval(text)
         except (ValueError, SyntaxError):
@@ -82,3 +88,56 @@ def normalize_language_code(value: Any, *, default: str = "unknown") -> str:
         return text
 
     return default
+
+
+def detect_language_from_text(text: str, *, default: str = "unknown") -> str:
+    """Guess ISO 639-1 code from document text (title + abstract)."""
+    sample = str(text).strip()
+    if len(sample) < 20:
+        return default
+    try:
+        from langdetect import DetectorFactory, detect
+
+        DetectorFactory.seed = 0
+        return normalize_language_code(detect(sample), default=default)
+    except Exception:  # noqa: BLE001
+        return default
+
+
+def resolve_document_language(
+    value: Any,
+    *,
+    text: str | None = None,
+    query_language: str | None = None,
+    default: str = "unknown",
+) -> str:
+    """Resolve language from metadata, with optional query/text fallbacks."""
+    code = normalize_language_code(value, default="")
+    if code and code != "unknown":
+        return code
+
+    query_code = normalize_language_code(query_language, default="") if query_language else ""
+    if query_code and query_code != "unknown":
+        return query_code
+
+    if text:
+        detected = detect_language_from_text(text, default="")
+        if detected and detected != "unknown":
+            return detected
+
+    return default
+
+
+def repair_language_series(metadata, text):
+    """Normalize metadata language codes; detect from text when still unknown."""
+    import pandas as pd
+
+    meta = pd.Series(metadata)
+    doc_text = pd.Series(text, index=meta.index)
+    resolved = meta.map(lambda v: normalize_language_code(v, default="unknown"))
+    unknown = resolved == "unknown"
+    if unknown.any():
+        resolved.loc[unknown] = doc_text.loc[unknown].map(
+            lambda t: detect_language_from_text(t, default="unknown"),
+        )
+    return resolved

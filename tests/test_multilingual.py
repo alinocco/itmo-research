@@ -30,6 +30,14 @@ def test_normalize_language_no_bracket_artifact():
     assert normalize_language_code("['") == "unknown"
 
 
+def test_resolve_document_language_from_text():
+    from textvec.corpus.language import resolve_document_language
+
+    ru_text = "Рак лёгких и иммунотерапия: новые подходы к лечению онкологических заболеваний."
+    assert resolve_document_language("['", text=ru_text, default="unknown") == "ru"
+    assert resolve_document_language("", query_language="de", default="unknown") == "de"
+
+
 def test_cjk_tokenization():
     text = "癌症免疫治疗的新方法"
     assert _is_cjk_heavy(text)

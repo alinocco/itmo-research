@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from ..config import ConfigNode, resolve_path
-from ..corpus.language import normalize_language_code
+from ..corpus.language import normalize_language_code, resolve_document_language
 from ..utils import get_logger
 from .reduce import reduce
 from .visualize import scatter_2d
@@ -113,7 +113,15 @@ def _color_labels(df: pd.DataFrame, field: str) -> list[str]:
     if field not in df.columns:
         return ["all"] * len(df)
     if field == "language":
-        return df[field].map(lambda v: normalize_language_code(v, default="unknown")).tolist()
+        text = (
+            df["text_raw"].fillna("")
+            if "text_raw" in df.columns
+            else (df.get("title", "").fillna("") + ". " + df.get("abstract", "").fillna(""))
+        )
+        return [
+            resolve_document_language(lang, text=doc_text, default="unknown")
+            for lang, doc_text in zip(df["language"], text)
+        ]
     return df[field].fillna("unknown").astype(str).tolist()
 
 

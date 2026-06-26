@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ..utils import get_logger
-from .language import normalize_language_code
+from .language import normalize_language_code, resolve_document_language
 from .schema import Document
 
 logger = get_logger("textvec.corpus.pubmed")
@@ -75,7 +75,7 @@ def fetch_pubmed(
             continue
         for article in records.get("PubmedArticle", []):
             try:
-                docs.append(_parse_article(article, topic))
+                docs.append(_parse_article(article, topic, query_language=language))
             except Exception as exc:  # noqa: BLE001 - skip malformed records
                 logger.debug("Skipping a PubMed record: %s", exc)
 
@@ -86,19 +86,35 @@ def fetch_pubmed(
     return docs
 
 
-def _parse_article(article: dict, topic: str) -> Document:
+def _parse_article(article: dict, topic: str, query_language: str | None = None) -> Document:
     medline = article["MedlineCitation"]
     pmid = str(medline["PMID"])
     art = medline["Article"]
 
-    title = _to_text(art.get("ArticleTitle", ""))
-    abstract = _extract_abstract(art)
+    title_en = _to_text(art.get("ArticleTitle", ""))
+    abstract_en = _extract_abstract_text(art.get("Abstract", {}))
+    vernacular_title = _to_text(art.get("VernacularTitle", ""))
+    other_abstracts = _extract_other_abstracts(medline)
+
+    title, abstract = _select_localized_text(
+        title_en,
+        abstract_en,
+        vernacular_title,
+        other_abstracts,
+        query_language=query_language,
+    )
+
     authors = _extract_authors(art)
     published = _extract_date(art)
     categories = [_to_text(mh["DescriptorName"]) for mh in medline.get("MeshHeadingList", [])]
 
     lang_raw = art.get("Language", "")
-    doc_lang = normalize_language_code(lang_raw, default="en") if lang_raw else "en"
+    doc_lang = resolve_document_language(
+        lang_raw,
+        text=f"{title}. {abstract}",
+        query_language=query_language,
+        default="en",
+    )
 
     return Document(
         doc_id=f"pubmed:{pmid}",
@@ -114,6 +130,51 @@ def _parse_article(article: dict, topic: str) -> Document:
     )
 
 
+def _select_localized_text(
+    title_en: str,
+    abstract_en: str,
+    vernacular_title: str,
+    other_abstracts: list[tuple[str, str]],
+    *,
+    query_language: str | None,
+) -> tuple[str, str]:
+    """Prefer VernacularTitle / non-English OtherAbstract for non-English queries."""
+    query_code = normalize_language_code(query_language, default="") if query_language else ""
+
+    if not query_code or query_code == "en":
+        return title_en, abstract_en
+
+    title = vernacular_title or title_en
+    abstract = abstract_en
+    for lang, text in other_abstracts:
+        if lang == query_code:
+            abstract = text
+            break
+    else:
+        for lang, text in other_abstracts:
+            if lang != "en":
+                abstract = text
+                break
+
+    return title, abstract
+
+
+def _extract_other_abstracts(medline: dict) -> list[tuple[str, str]]:
+    """Return ``(iso639_1, abstract_text)`` pairs from Medline ``OtherAbstract``."""
+    raw = medline.get("OtherAbstract", [])
+    if isinstance(raw, dict):
+        raw = [raw]
+
+    out: list[tuple[str, str]] = []
+    for item in raw or []:
+        lang = normalize_language_code(item.get("Language", ""), default="")
+        text = _extract_abstract_text(item)
+        if lang and text:
+            out.append((lang, text))
+    return out
+
+
+
 def _normalize_language(value) -> str:
     """Backward-compatible alias for :func:`normalize_language_code`."""
     return normalize_language_code(value)
@@ -124,7 +185,13 @@ def _to_text(value) -> str:
 
 
 def _extract_abstract(art: dict) -> str:
-    abstract_obj = art.get("Abstract", {})
+    """Extract the primary (usually English) abstract from an Article."""
+    return _extract_abstract_text(art.get("Abstract", {}))
+
+
+def _extract_abstract_text(abstract_obj: dict | None) -> str:
+    if not abstract_obj:
+        return ""
     parts = abstract_obj.get("AbstractText", [])
     if isinstance(parts, list):
         return " ".join(_to_text(p) for p in parts)

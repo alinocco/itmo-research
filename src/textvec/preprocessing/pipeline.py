@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from ..config import ConfigNode, resolve_path
-from ..corpus.language import normalize_language_code
+from ..corpus.language import normalize_language_code, repair_language_series, resolve_document_language
 from ..utils import get_logger
 from .cleaning import clean_text
 
@@ -252,6 +252,19 @@ def preprocess_corpus(
     pp = cfg.preprocessing
     fields = text_fields or list(pp.get("text_fields", ["title", "abstract"]))
     raw_text = build_document_text(df, fields)
+    if "language" in df.columns:
+        before_unknown = df["language"].map(
+            lambda v: normalize_language_code(v, default="unknown") == "unknown",
+        ).sum()
+        df = df.copy()
+        df["language"] = repair_language_series(df["language"], raw_text)
+        after_unknown = (df["language"] == "unknown").sum()
+        if before_unknown:
+            logger.info(
+                "Language metadata repaired: %d unknown before -> %d after (langdetect fallback)",
+                before_unknown,
+                after_unknown,
+            )
     strategy = pp.get("strategy", "monolingual")
     logger.info("Preprocessing %d documents (fields=%s, strategy=%s)...", len(df), fields, strategy)
 
