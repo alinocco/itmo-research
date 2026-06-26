@@ -1,0 +1,16 @@
+{
+  "method": "bert",
+  "dim": 768,
+  "elapsed_sec": 542.224,
+  "params": {
+    "device": "auto",
+    "batch_size": 16,
+    "max_seq_length": 512,
+    "normalize_embeddings": true,
+    "chunk_long_docs": true,
+    "chunk_size_words": 350,
+    "n_chunks": 6162,
+    "actual_dim": 768,
+    "resolved_model": "bert-base-uncased"
+  }
+}

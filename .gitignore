@@ -124,10 +124,22 @@ cython_debug/
 data/raw/*
 data/interim/*
 data/processed/*
-results/embeddings/*
-results/figures/*
-results/reports/*
 !**/.gitkeep
+
+# Embeddings: keep manifests/meta only (not .npy matrices)
+results/embeddings/**
+!results/embeddings/**/
+!results/embeddings/**/manifest.json
+!results/embeddings/**/*.meta.json
+
+# Figures & reports: commit for advisor demo
+results/figures/**
+!results/figures/**/
+!results/figures/**/*.png
+results/reports/**
+!results/reports/**/
+!results/reports/**/*.md
+!results/reports/**/*.json
 
 # Models & ML caches
 .cache/

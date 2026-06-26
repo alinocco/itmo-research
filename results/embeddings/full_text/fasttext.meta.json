@@ -1,0 +1,12 @@
+{
+  "method": "fasttext",
+  "dim": 200,
+  "elapsed_sec": 62.03,
+  "params": {
+    "seed": 42,
+    "vector_size": 200,
+    "window": 5,
+    "min_count": 2,
+    "epochs": 20
+  }
+}

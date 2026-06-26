@@ -1,0 +1,16 @@
+{
+  "method": "gte",
+  "dim": 768,
+  "elapsed_sec": 1453.5,
+  "params": {
+    "device": "auto",
+    "batch_size": 16,
+    "max_seq_length": 512,
+    "normalize_embeddings": true,
+    "chunk_long_docs": true,
+    "chunk_size_words": 350,
+    "n_chunks": 15928,
+    "actual_dim": 768,
+    "resolved_model": "thenlper/gte-base"
+  }
+}

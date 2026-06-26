@@ -1,0 +1,13 @@
+{
+  "method": "sbert",
+  "dim": 384,
+  "elapsed_sec": 381.571,
+  "params": {
+    "device": "auto",
+    "batch_size": 16,
+    "max_seq_length": 512,
+    "normalize_embeddings": true,
+    "actual_dim": 384,
+    "resolved_model": "sentence-transformers/all-MiniLM-L6-v2"
+  }
+}

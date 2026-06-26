@@ -1,0 +1,16 @@
+{
+  "method": "bge-m3",
+  "dim": 1024,
+  "elapsed_sec": 2188.707,
+  "params": {
+    "device": "auto",
+    "batch_size": 16,
+    "max_seq_length": 512,
+    "normalize_embeddings": true,
+    "chunk_long_docs": true,
+    "chunk_size_words": 350,
+    "n_chunks": 6162,
+    "actual_dim": 1024,
+    "resolved_model": "BAAI/bge-m3"
+  }
+}

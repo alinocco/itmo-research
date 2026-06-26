@@ -1,0 +1,132 @@
+{
+  "tfidf": {
+    "status": "ok",
+    "dim": 299,
+    "n_docs": 300,
+    "elapsed_sec": 0.962,
+    "params": {
+      "seed": 42,
+      "max_features": 20000,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 2,
+      "svd_components": 300,
+      "vocab_size": 5181,
+      "actual_dim": 299,
+      "svd_explained_variance": 0.9991
+    }
+  },
+  "fasttext": {
+    "status": "ok",
+    "dim": 200,
+    "n_docs": 300,
+    "elapsed_sec": 3.733,
+    "params": {
+      "seed": 42,
+      "vector_size": 200,
+      "window": 5,
+      "min_count": 2,
+      "epochs": 20
+    }
+  },
+  "doc2vec": {
+    "status": "ok",
+    "dim": 200,
+    "n_docs": 300,
+    "elapsed_sec": 0.7,
+    "params": {
+      "seed": 42,
+      "vector_size": 200,
+      "window": 5,
+      "min_count": 2,
+      "epochs": 40
+    }
+  },
+  "sbert": {
+    "status": "ok",
+    "dim": 384,
+    "n_docs": 300,
+    "elapsed_sec": 11.571,
+    "params": {
+      "device": "auto",
+      "batch_size": 16,
+      "max_seq_length": 512,
+      "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 307,
+      "actual_dim": 384,
+      "resolved_model": "sentence-transformers/all-MiniLM-L6-v2"
+    }
+  },
+  "bert": {
+    "status": "ok",
+    "dim": 768,
+    "n_docs": 300,
+    "elapsed_sec": 22.233,
+    "params": {
+      "device": "auto",
+      "batch_size": 16,
+      "max_seq_length": 512,
+      "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 307,
+      "actual_dim": 768,
+      "resolved_model": "bert-base-uncased"
+    }
+  },
+  "bge-m3": {
+    "status": "ok",
+    "dim": 1024,
+    "n_docs": 300,
+    "elapsed_sec": 58.212,
+    "params": {
+      "device": "auto",
+      "batch_size": 16,
+      "max_seq_length": 512,
+      "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 307,
+      "actual_dim": 1024,
+      "resolved_model": "BAAI/bge-m3"
+    }
+  },
+  "e5": {
+    "status": "ok",
+    "dim": 768,
+    "n_docs": 300,
+    "elapsed_sec": 25.285,
+    "params": {
+      "device": "auto",
+      "batch_size": 16,
+      "max_seq_length": 512,
+      "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 307,
+      "actual_dim": 768,
+      "resolved_model": "intfloat/multilingual-e5-base"
+    }
+  },
+  "gte": {
+    "status": "ok",
+    "dim": 768,
+    "n_docs": 300,
+    "elapsed_sec": 19.627,
+    "params": {
+      "device": "auto",
+      "batch_size": 16,
+      "max_seq_length": 512,
+      "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 307,
+      "actual_dim": 768,
+      "resolved_model": "thenlper/gte-base"
+    }
+  }
+}
