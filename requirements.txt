@@ -23,7 +23,8 @@ langdetect>=1.0.9
 gensim>=4.3.3
 sentence-transformers>=3.0
 transformers>=4.40
-torch>=2.2
+# torch: install GPU build via ./scripts/run_100k_multilingual_windows.sh setup-gpu
+#        (requirements would otherwise pull CPU-only torch from PyPI)
 
 # ---- Semantic space analysis / visualization ----
 umap-learn>=0.5.6

@@ -114,6 +114,46 @@ print(f"OK: email={email}, api_key={str(key)[:8]}...")
 PY
 }
 
+install_pytorch_cuda() {
+  log "Installing PyTorch with CUDA 12.4 (removes CPU-only build from PyPI)..."
+  pip uninstall -y torch torchvision torchaudio 2>/dev/null || true
+  pip install --force-reinstall torch torchvision torchaudio \
+    --index-url https://download.pytorch.org/whl/cu124
+  python - <<'PY' || return 1
+import torch
+print(f"torch {torch.__version__}, cuda build={torch.version.cuda}, available={torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
+else:
+    print("ERROR: CUDA still not available. Check: nvidia-smi")
+    raise SystemExit(1)
+PY
+}
+
+cmd_setup_gpu() {
+  mkdir -p "$LOG_DIR"
+  activate_venv
+  log "=== SETUP-GPU ==="
+  install_pytorch_cuda
+  log "=== SETUP-GPU DONE ==="
+}
+
+cmd_gpu() {
+  activate_venv
+  python - <<'PY'
+import torch
+print("torch version :", torch.__version__)
+print("cuda compiled :", torch.version.cuda or "NO (CPU-only build)")
+print("cuda available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("gpu name      :", torch.cuda.get_device_name(0))
+    print("gpu memory    :", round(torch.cuda.get_device_properties(0).total_memory / 1e9, 1), "GB")
+else:
+    print()
+    print("Fix: ./scripts/run_100k_multilingual_windows.sh setup-gpu")
+PY
+}
+
 cmd_setup() {
   mkdir -p "$LOG_DIR"
   log "=== SETUP ==="
@@ -137,12 +177,7 @@ cmd_setup() {
   pip install -r requirements.txt
   pip install -e .
 
-  if python -c "import torch; exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null; then
-    log "PyTorch with CUDA already available"
-  else
-    log "Installing PyTorch (CUDA 12.4). Adjust index URL if your driver needs another build."
-    pip install torch --index-url https://download.pytorch.org/whl/cu124
-  fi
+  install_pytorch_cuda || log "WARNING: CUDA PyTorch install failed — run: ./scripts/run_100k_multilingual_windows.sh setup-gpu"
 
   python -c "import nltk; nltk.download('stopwords', quiet=True)"
 
@@ -284,6 +319,8 @@ Usage: $(basename "$0") <command>
 
 Commands:
   setup       Create venv, install deps, download spaCy models
+  setup-gpu   Reinstall PyTorch with CUDA (fix "not compiled with CUDA")
+  gpu         Check GPU / PyTorch CUDA status
   collect     Fetch ~100k articles from ArXiv + PubMed
   stats       Corpus statistics + length histogram
   preprocess  Clean / lemmatize (multilingual)
@@ -300,10 +337,10 @@ Environment overrides:
 
 Examples:
   # Git Bash on Windows (from the Project folder):
-  cd /c/Users/Aidar/Alina/itmo-research/Project
-  ./scripts/run_100k_multilingual.sh setup
-  ./scripts/run_100k_multilingual.sh all
-  ./scripts/run_100k_multilingual.sh status
+  cd /c/Users/Aidar/Alina/itmo-research
+  ./scripts/run_100k_multilingual_windows.sh setup-gpu
+  ./scripts/run_100k_multilingual_windows.sh gpu
+  ./scripts/run_100k_multilingual_windows.sh vectorize
 EOF
 }
 
@@ -311,6 +348,8 @@ main() {
   local cmd="${1:-}"
   case "$cmd" in
     setup)      cmd_setup ;;
+    setup-gpu)  cmd_setup_gpu ;;
+    gpu)        cmd_gpu ;;
     collect)    cmd_collect ;;
     stats)      cmd_stats ;;
     preprocess) cmd_preprocess ;;

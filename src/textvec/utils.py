@@ -40,16 +40,39 @@ def set_seed(seed: int = 42) -> None:
 
 
 def resolve_device(device: str = "auto") -> str:
-    """Resolve 'auto' to 'cuda'/'mps'/'cpu' based on availability."""
-    if device != "auto":
-        return device
+    """Resolve 'auto' to 'cuda'/'mps'/'cpu'; validate explicit device requests."""
+    logger = get_logger("textvec.utils")
     try:
         import torch
-
-        if torch.cuda.is_available():
-            return "cuda"
-        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
-            return "mps"
     except ImportError:  # pragma: no cover
-        pass
-    return "cpu"
+        return "cpu"
+
+    cuda_ok = torch.cuda.is_available()
+    mps_ok = bool(getattr(torch.backends, "mps", None)) and torch.backends.mps.is_available()
+
+    if device == "auto":
+        if cuda_ok:
+            return "cuda"
+        if mps_ok:
+            return "mps"
+        return "cpu"
+
+    if device == "cuda":
+        if not cuda_ok:
+            cuda_built = torch.version.cuda or "none"
+            logger.warning(
+                "CUDA requested but unavailable (torch CUDA build: %s). "
+                "Reinstall GPU PyTorch: pip install --force-reinstall torch torchvision "
+                "torchaudio --index-url https://download.pytorch.org/whl/cu124 — using CPU.",
+                cuda_built,
+            )
+            return "cpu"
+        return "cuda"
+
+    if device == "mps":
+        if not mps_ok:
+            logger.warning("MPS requested but unavailable — using CPU.")
+            return "cpu"
+        return "mps"
+
+    return device
