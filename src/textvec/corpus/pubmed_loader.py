@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ..utils import get_logger
+from .language import normalize_language_code
 from .schema import Document
 
 logger = get_logger("textvec.corpus.pubmed")
@@ -97,7 +98,7 @@ def _parse_article(article: dict, topic: str) -> Document:
     categories = [_to_text(mh["DescriptorName"]) for mh in medline.get("MeshHeadingList", [])]
 
     lang_raw = art.get("Language", "")
-    doc_lang = _normalize_language(lang_raw) if lang_raw else "en"
+    doc_lang = normalize_language_code(lang_raw, default="en") if lang_raw else "en"
 
     return Document(
         doc_id=f"pubmed:{pmid}",
@@ -114,22 +115,8 @@ def _parse_article(article: dict, topic: str) -> Document:
 
 
 def _normalize_language(value) -> str:
-    """Map PubMed language strings to ISO 639-1 codes where possible."""
-    text = str(value).strip().lower()
-    inv = {v: k for k, v in _PUBMED_LANGUAGE.items()}
-    if text in inv:
-        return inv[text]
-    aliases = {
-        "eng": "en", "english": "en",
-        "rus": "ru", "russian": "ru",
-        "deu": "de", "ger": "de", "german": "de",
-        "fra": "fr", "fre": "fr", "french": "fr",
-        "spa": "es", "spanish": "es",
-        "zho": "zh", "chi": "zh", "chinese": "zh",
-        "jpn": "ja", "japanese": "ja",
-        "por": "pt", "portuguese": "pt",
-    }
-    return aliases.get(text, text[:2] if len(text) >= 2 else "unknown")
+    """Backward-compatible alias for :func:`normalize_language_code`."""
+    return normalize_language_code(value)
 
 
 def _to_text(value) -> str:

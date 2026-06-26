@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from ..corpus.language import normalize_language_code
 from ..utils import get_logger
 
 logger = get_logger("textvec.analysis.stats")
@@ -51,7 +52,8 @@ def corpus_statistics(df: pd.DataFrame, sample_lang: int = 200) -> dict:
         },
     }
     if "language" in df.columns:
-        summary["by_language"] = df["language"].fillna("unknown").astype(str).str.lower().value_counts().to_dict()
+        langs = df["language"].map(lambda v: normalize_language_code(v, default="unknown"))
+        summary["by_language"] = langs.value_counts().to_dict()
     return summary
 
 

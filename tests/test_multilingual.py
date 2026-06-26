@@ -16,6 +16,18 @@ def test_normalize_language():
     assert _normalize_language("Russian") == "ru"
     assert _normalize_language("eng") == "en"
     assert _normalize_language("chinese") == "zh"
+    assert _normalize_language(["eng"]) == "en"
+    assert _normalize_language("['eng']") == "en"
+    assert _normalize_language(["rus", "eng"]) == "ru"
+    assert _normalize_language("") == "unknown"
+
+
+def test_normalize_language_no_bracket_artifact():
+    from textvec.corpus.language import normalize_language_code
+
+    assert normalize_language_code(["eng"]) == "en"
+    assert normalize_language_code("['eng']") == "en"
+    assert normalize_language_code("['") == "unknown"
 
 
 def test_cjk_tokenization():

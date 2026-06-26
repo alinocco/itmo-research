@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from ..config import ConfigNode, resolve_path
+from ..corpus.language import normalize_language_code
 from ..utils import get_logger
 from .cleaning import clean_text
 
@@ -201,7 +202,7 @@ def _preprocess_multilingual(
 ) -> tuple[list[list[str]], list[str]]:
     """Route each document to a language-specific preprocessor."""
     languages = (
-        df["language"].fillna("en").astype(str).str.lower()
+        df["language"].map(lambda v: normalize_language_code(v, default="en"))
         if "language" in df.columns
         else pd.Series(["en"] * len(df), index=df.index)
     )
