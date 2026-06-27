@@ -4,11 +4,11 @@ Descriptive metrics computed against known topic labels (higher silhouette / pur
 
 | Method | Silhouette (cosine) | kNN topic purity | #topics |
 |--------|---------------------|------------------|---------|
-| sbert | 0.1632 | 0.849 | 8 |
-| gte | 0.1184 | 0.844 | 8 |
-| bert | 0.1055 | 0.7526 | 8 |
-| e5 | 0.1041 | 0.819 | 8 |
-| tfidf | 0.0785 | 0.7947 | 8 |
-| bge-m3 | 0.0713 | 0.802 | 8 |
-| fasttext | 0.0704 | 0.78 | 8 |
-| doc2vec | 0.0025 | 0.5627 | 8 |
+| tfidf | 0.0748 | 0.7329 | 17 |
+| e5 | 0.0364 | 0.7136 | 17 |
+| bge-m3 | 0.0254 | 0.6839 | 17 |
+| doc2vec | -0.0058 | 0.4294 | 17 |
+| sbert | -0.0128 | 0.5772 | 17 |
+| bert | -0.0409 | 0.5596 | 17 |
+| gte | -0.046 | 0.3423 | 17 |
+| fasttext | -0.1071 | 0.6519 | 17 |

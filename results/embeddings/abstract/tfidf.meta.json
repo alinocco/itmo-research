@@ -1,18 +1,18 @@
 {
   "method": "tfidf",
   "dim": 300,
-  "elapsed_sec": 8.063,
+  "elapsed_sec": 36.021,
   "params": {
     "seed": 42,
-    "max_features": 20000,
+    "max_features": 50000,
     "ngram_range": [
       1,
       2
     ],
-    "min_df": 2,
+    "min_df": 3,
     "svd_components": 300,
-    "vocab_size": 20000,
+    "vocab_size": 50000,
     "actual_dim": 300,
-    "svd_explained_variance": 0.263
+    "svd_explained_variance": 0.22
   }
 }

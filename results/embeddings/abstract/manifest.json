@@ -2,92 +2,95 @@
   "sbert": {
     "status": "ok",
     "dim": 384,
-    "n_docs": 15431,
-    "elapsed_sec": 381.571,
+    "n_docs": 45581,
+    "elapsed_sec": 148.691,
     "params": {
-      "device": "auto",
-      "batch_size": 16,
+      "device": "cuda",
+      "batch_size": 8,
       "max_seq_length": 512,
       "normalize_embeddings": true,
+      "chunk_long_docs": true,
+      "chunk_size_words": 350,
+      "n_chunks": 48395,
       "actual_dim": 384,
-      "resolved_model": "sentence-transformers/all-MiniLM-L6-v2"
+      "resolved_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     }
   },
   "tfidf": {
     "status": "ok",
     "dim": 300,
-    "n_docs": 15431,
-    "elapsed_sec": 8.063,
+    "n_docs": 45581,
+    "elapsed_sec": 36.021,
     "params": {
       "seed": 42,
-      "max_features": 20000,
+      "max_features": 50000,
       "ngram_range": [
         1,
         2
       ],
-      "min_df": 2,
+      "min_df": 3,
       "svd_components": 300,
-      "vocab_size": 20000,
+      "vocab_size": 50000,
       "actual_dim": 300,
-      "svd_explained_variance": 0.263
+      "svd_explained_variance": 0.22
     }
   },
   "doc2vec": {
     "status": "ok",
     "dim": 200,
-    "n_docs": 15431,
-    "elapsed_sec": 43.188,
+    "n_docs": 45581,
+    "elapsed_sec": 109.231,
     "params": {
       "seed": 42,
       "vector_size": 200,
       "window": 5,
-      "min_count": 2,
-      "epochs": 40
+      "min_count": 3,
+      "epochs": 30
     }
   },
   "fasttext": {
     "status": "ok",
     "dim": 200,
-    "n_docs": 15431,
-    "elapsed_sec": 139.191,
+    "n_docs": 45581,
+    "elapsed_sec": 301.815,
     "params": {
       "seed": 42,
       "vector_size": 200,
       "window": 5,
-      "min_count": 2,
-      "epochs": 20
+      "min_count": 3,
+      "epochs": 15
     }
   },
   "bert": {
     "status": "ok",
     "dim": 768,
-    "n_docs": 15431,
-    "elapsed_sec": 1788.464,
+    "n_docs": 45581,
+    "elapsed_sec": 320.22,
     "params": {
-      "device": "auto",
-      "batch_size": 16,
+      "device": "cuda",
+      "batch_size": 8,
       "max_seq_length": 512,
       "normalize_embeddings": true,
       "chunk_long_docs": true,
       "chunk_size_words": 350,
-      "n_chunks": 15928,
+      "n_chunks": 48395,
       "actual_dim": 768,
-      "resolved_model": "bert-base-uncased"
+      "resolved_model": "bert-base-multilingual-cased"
     }
   },
   "bge-m3": {
     "status": "ok",
     "dim": 1024,
-    "n_docs": 15431,
-    "elapsed_sec": 6862.71,
+    "n_docs": 45581,
+    "elapsed_sec": 967.669,
     "params": {
-      "device": "auto",
-      "batch_size": 16,
+      "device": "cuda",
+      "batch_size": 8,
       "max_seq_length": 512,
       "normalize_embeddings": true,
       "chunk_long_docs": true,
       "chunk_size_words": 350,
-      "n_chunks": 15928,
+      "n_chunks": 48395,
       "actual_dim": 1024,
       "resolved_model": "BAAI/bge-m3"
     }
@@ -95,16 +98,16 @@
   "e5": {
     "status": "ok",
     "dim": 768,
-    "n_docs": 15431,
-    "elapsed_sec": 1917.256,
+    "n_docs": 45581,
+    "elapsed_sec": 316.236,
     "params": {
-      "device": "auto",
-      "batch_size": 16,
+      "device": "cuda",
+      "batch_size": 8,
       "max_seq_length": 512,
       "normalize_embeddings": true,
       "chunk_long_docs": true,
       "chunk_size_words": 350,
-      "n_chunks": 15928,
+      "n_chunks": 48395,
       "actual_dim": 768,
       "resolved_model": "intfloat/multilingual-e5-base"
     }
@@ -112,18 +115,19 @@
   "gte": {
     "status": "ok",
     "dim": 768,
-    "n_docs": 15431,
-    "elapsed_sec": 1453.5,
+    "n_docs": 45581,
+    "elapsed_sec": 190.81,
     "params": {
       "device": "auto",
-      "batch_size": 16,
+      "batch_size": 8,
       "max_seq_length": 512,
       "normalize_embeddings": true,
       "chunk_long_docs": true,
       "chunk_size_words": 350,
-      "n_chunks": 15928,
+      "trust_remote_code": true,
+      "n_chunks": 48395,
       "actual_dim": 768,
-      "resolved_model": "thenlper/gte-base"
+      "resolved_model": "Alibaba-NLP/gte-multilingual-base"
     }
   }
 }

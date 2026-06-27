@@ -1,31 +1,50 @@
 {
-  "n_documents": 15431,
+  "n_documents": 45581,
   "by_source": {
-    "arxiv": 9618,
-    "pubmed": 5813
+    "pubmed": 23269,
+    "arxiv": 22312
   },
   "by_topic": {
+    "oncology": 9607,
+    "neurology": 4999,
+    "cardiology": 3874,
+    "endocrinology": 2819,
     "machine_learning": 2000,
-    "astrophysics": 2000,
+    "astrophysics": 1998,
     "quantitative_biology": 1984,
-    "cardiology": 1951,
-    "oncology": 1938,
-    "neurology": 1924,
-    "cryptography_security": 1873,
-    "computation_language": 1761
+    "infectious": 1970,
+    "nlp": 1911,
+    "quantum_computing": 1907,
+    "information_theory": 1871,
+    "cryptography_security": 1851,
+    "software_engineering": 1781,
+    "computation_language": 1776,
+    "statistics": 1775,
+    "robotics": 1741,
+    "computer_vision": 1717
   },
   "language_sample": {
-    "en": 200
+    "en": 2000
   },
   "words": {
-    "min": 12,
-    "max": 1182,
-    "mean": 221.44,
-    "median": 218.0
+    "min": 7,
+    "max": 1447,
+    "mean": 223.83,
+    "median": 215.0
   },
   "chars": {
-    "min": 86,
-    "max": 8804,
-    "mean": 1654.44
+    "min": 61,
+    "max": 10991,
+    "mean": 1656.01
+  },
+  "by_language": {
+    "en": 37726,
+    "ru": 1984,
+    "zh": 1874,
+    "ja": 1529,
+    "fr": 1058,
+    "es": 801,
+    "de": 497,
+    "pt": 112
   }
 }

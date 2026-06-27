@@ -1,16 +1,17 @@
 {
   "method": "gte",
   "dim": 768,
-  "elapsed_sec": 1453.5,
+  "elapsed_sec": 190.81,
   "params": {
     "device": "auto",
-    "batch_size": 16,
+    "batch_size": 8,
     "max_seq_length": 512,
     "normalize_embeddings": true,
     "chunk_long_docs": true,
     "chunk_size_words": 350,
-    "n_chunks": 15928,
+    "trust_remote_code": true,
+    "n_chunks": 48395,
     "actual_dim": 768,
-    "resolved_model": "thenlper/gte-base"
+    "resolved_model": "Alibaba-NLP/gte-multilingual-base"
   }
 }
