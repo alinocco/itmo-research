@@ -1,0 +1,263 @@
+{
+  "run_id": "20260627_142823",
+  "label": null,
+  "started_at": "2026-06-27T05:04:53",
+  "finished_at": "2026-06-27T06:15:16",
+  "status": "completed",
+  "config": "config/corpus_100k_multilingual.yaml",
+  "variant": "abstract",
+  "command": "./scripts/run_100k_multilingual_windows.sh all",
+  "platform": "Windows (Git Bash) + CUDA GPU",
+  "logs": [
+    "results/runs/20260627_142823/logs/run_20260627_022956.log",
+    "results/runs/20260627_142823/logs/run_20260627_023143.log",
+    "results/runs/20260627_142823/logs/run_20260627_023637.log",
+    "results/runs/20260627_142823/logs/run_20260627_023716.log",
+    "results/runs/20260627_142823/logs/run_20260627_023743.log",
+    "results/runs/20260627_142823/logs/run_20260627_023830.log",
+    "results/runs/20260627_142823/logs/run_20260627_024232.log",
+    "results/runs/20260627_142823/logs/run_20260627_025115.log",
+    "results/runs/20260627_142823/logs/run_20260627_025132.log",
+    "results/runs/20260627_142823/logs/run_20260627_025357.log",
+    "results/runs/20260627_142823/logs/run_20260627_030211.log",
+    "results/runs/20260627_142823/logs/run_20260627_030708.log",
+    "results/runs/20260627_142823/logs/run_20260627_044022.log",
+    "results/runs/20260627_142823/logs/run_20260627_044711.log",
+    "results/runs/20260627_142823/logs/run_20260627_050453.log",
+    "results/runs/20260627_142823/logs/run_20260627_101831.log"
+  ],
+  "stages": {
+    "vectorize_sbert": {
+      "status": "ok",
+      "elapsed_sec": 148.691,
+      "dim": 384
+    },
+    "vectorize_tfidf": {
+      "status": "ok",
+      "elapsed_sec": 36.021,
+      "dim": 300
+    },
+    "vectorize_doc2vec": {
+      "status": "ok",
+      "elapsed_sec": 109.231,
+      "dim": 200
+    },
+    "vectorize_fasttext": {
+      "status": "ok",
+      "elapsed_sec": 301.815,
+      "dim": 200
+    },
+    "vectorize_bert": {
+      "status": "ok",
+      "elapsed_sec": 320.22,
+      "dim": 768
+    },
+    "vectorize_bge-m3": {
+      "status": "ok",
+      "elapsed_sec": 967.669,
+      "dim": 1024
+    },
+    "vectorize_e5": {
+      "status": "ok",
+      "elapsed_sec": 316.236,
+      "dim": 768
+    },
+    "vectorize_gte": {
+      "status": "ok",
+      "elapsed_sec": 190.81,
+      "dim": 768
+    },
+    "collect": {
+      "status": "completed",
+      "elapsed_sec": 1163
+    },
+    "stats": {
+      "status": "completed",
+      "elapsed_sec": 14
+    },
+    "preprocess": {
+      "status": "completed",
+      "elapsed_sec": 90
+    },
+    "analyze": {
+      "status": "completed",
+      "elapsed_sec": 2303,
+      "methods": [
+        "sbert",
+        "tfidf",
+        "doc2vec",
+        "fasttext",
+        "bert",
+        "bge-m3",
+        "e5",
+        "gte"
+      ],
+      "figures": 32
+    }
+  },
+  "data": {
+    "n_corpus_docs": 45581,
+    "n_corpus_arxiv": 22312,
+    "n_corpus_pubmed": 23269,
+    "n_clean_abstract": 45581,
+    "n_methods_ok": 8,
+    "n_methods_failed": 0,
+    "by_language": {
+      "en": 37726,
+      "ru": 1984,
+      "zh": 1874,
+      "ja": 1529,
+      "fr": 1058,
+      "es": 801,
+      "de": 497,
+      "pt": 112
+    }
+  },
+  "artifacts": {
+    "figures": [
+      "results/runs/20260627_142823/figures/abstract/bert_pca.png",
+      "results/runs/20260627_142823/figures/abstract/bert_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/bert_umap.png",
+      "results/runs/20260627_142823/figures/abstract/bert_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/bge-m3_pca.png",
+      "results/runs/20260627_142823/figures/abstract/bge-m3_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/bge-m3_umap.png",
+      "results/runs/20260627_142823/figures/abstract/bge-m3_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/doc2vec_pca.png",
+      "results/runs/20260627_142823/figures/abstract/doc2vec_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/doc2vec_umap.png",
+      "results/runs/20260627_142823/figures/abstract/doc2vec_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/e5_pca.png",
+      "results/runs/20260627_142823/figures/abstract/e5_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/e5_umap.png",
+      "results/runs/20260627_142823/figures/abstract/e5_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/fasttext_pca.png",
+      "results/runs/20260627_142823/figures/abstract/fasttext_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/fasttext_umap.png",
+      "results/runs/20260627_142823/figures/abstract/fasttext_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/gte_pca.png",
+      "results/runs/20260627_142823/figures/abstract/gte_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/gte_umap.png",
+      "results/runs/20260627_142823/figures/abstract/gte_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/sbert_pca.png",
+      "results/runs/20260627_142823/figures/abstract/sbert_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/sbert_umap.png",
+      "results/runs/20260627_142823/figures/abstract/sbert_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract/tfidf_pca.png",
+      "results/runs/20260627_142823/figures/abstract/tfidf_pca_language.png",
+      "results/runs/20260627_142823/figures/abstract/tfidf_umap.png",
+      "results/runs/20260627_142823/figures/abstract/tfidf_umap_language.png",
+      "results/runs/20260627_142823/figures/abstract_subset/bert_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/bert_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/bge-m3_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/bge-m3_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/doc2vec_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/doc2vec_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/e5_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/e5_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/fasttext_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/fasttext_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/gte_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/gte_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/sbert_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/sbert_umap.png",
+      "results/runs/20260627_142823/figures/abstract_subset/tfidf_pca.png",
+      "results/runs/20260627_142823/figures/abstract_subset/tfidf_umap.png",
+      "results/runs/20260627_142823/figures/corpus_lengths.png",
+      "results/runs/20260627_142823/figures/doc2vec_pca.png",
+      "results/runs/20260627_142823/figures/doc2vec_umap.png",
+      "results/runs/20260627_142823/figures/fasttext_pca.png",
+      "results/runs/20260627_142823/figures/fasttext_umap.png",
+      "results/runs/20260627_142823/figures/full_text/bert_pca.png",
+      "results/runs/20260627_142823/figures/full_text/bert_umap.png",
+      "results/runs/20260627_142823/figures/full_text/bge-m3_pca.png",
+      "results/runs/20260627_142823/figures/full_text/bge-m3_umap.png",
+      "results/runs/20260627_142823/figures/full_text/doc2vec_pca.png",
+      "results/runs/20260627_142823/figures/full_text/doc2vec_umap.png",
+      "results/runs/20260627_142823/figures/full_text/e5_pca.png",
+      "results/runs/20260627_142823/figures/full_text/e5_umap.png",
+      "results/runs/20260627_142823/figures/full_text/fasttext_pca.png",
+      "results/runs/20260627_142823/figures/full_text/fasttext_umap.png",
+      "results/runs/20260627_142823/figures/full_text/gte_pca.png",
+      "results/runs/20260627_142823/figures/full_text/gte_umap.png",
+      "results/runs/20260627_142823/figures/full_text/sbert_pca.png",
+      "results/runs/20260627_142823/figures/full_text/sbert_umap.png",
+      "results/runs/20260627_142823/figures/full_text/tfidf_pca.png",
+      "results/runs/20260627_142823/figures/full_text/tfidf_umap.png",
+      "results/runs/20260627_142823/figures/sbert_pca.png",
+      "results/runs/20260627_142823/figures/sbert_umap.png",
+      "results/runs/20260627_142823/figures/tfidf_pca.png",
+      "results/runs/20260627_142823/figures/tfidf_umap.png"
+    ],
+    "reports": [
+      "results/runs/20260627_142823/reports/abstract/semantic_analysis.json",
+      "results/runs/20260627_142823/reports/abstract/semantic_analysis.md",
+      "results/runs/20260627_142823/reports/abstract_subset/semantic_analysis.json",
+      "results/runs/20260627_142823/reports/abstract_subset/semantic_analysis.md",
+      "results/runs/20260627_142823/reports/corpus_stats.json",
+      "results/runs/20260627_142823/reports/full_text/semantic_analysis.json",
+      "results/runs/20260627_142823/reports/full_text/semantic_analysis.md",
+      "results/runs/20260627_142823/reports/semantic_analysis.json",
+      "results/runs/20260627_142823/reports/semantic_analysis.md",
+      "results/runs/20260627_142823/reports/Отчёт_текущее_состояние.md"
+    ],
+    "embeddings": [
+      {
+        "variant": "abstract",
+        "method": "bert",
+        "dim": 768,
+        "size_mb": 133.5,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/bert.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "bge-m3",
+        "dim": 1024,
+        "size_mb": 178.1,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/bge-m3.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "doc2vec",
+        "dim": 200,
+        "size_mb": 34.8,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/doc2vec.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "e5",
+        "dim": 768,
+        "size_mb": 133.5,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/e5.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "fasttext",
+        "dim": 200,
+        "size_mb": 34.8,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/fasttext.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "gte",
+        "dim": 768,
+        "size_mb": 133.5,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/gte.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "sbert",
+        "dim": 384,
+        "size_mb": 66.8,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/sbert.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "tfidf",
+        "dim": 300,
+        "size_mb": 52.2,
+        "source": "artefacts/20260627_142823/results/embeddings/abstract/tfidf.npy"
+      }
+    ]
+  }
+}

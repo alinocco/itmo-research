@@ -1,0 +1,239 @@
+{
+  "run_id": "20260627_050356",
+  "label": null,
+  "started_at": "2026-06-27T03:07:08",
+  "finished_at": "2026-06-27T03:46:32",
+  "status": "completed_partial",
+  "config": "config/corpus_100k_multilingual.yaml",
+  "variant": "abstract",
+  "command": "./scripts/run_100k_multilingual_windows.sh all",
+  "platform": "Windows (Git Bash)",
+  "logs": [
+    "results/runs/20260627_050356/logs/run_20260627_022956.log",
+    "results/runs/20260627_050356/logs/run_20260627_023143.log",
+    "results/runs/20260627_050356/logs/run_20260627_023637.log",
+    "results/runs/20260627_050356/logs/run_20260627_023716.log",
+    "results/runs/20260627_050356/logs/run_20260627_023743.log",
+    "results/runs/20260627_050356/logs/run_20260627_023830.log",
+    "results/runs/20260627_050356/logs/run_20260627_024232.log",
+    "results/runs/20260627_050356/logs/run_20260627_025115.log",
+    "results/runs/20260627_050356/logs/run_20260627_025132.log",
+    "results/runs/20260627_050356/logs/run_20260627_025357.log",
+    "results/runs/20260627_050356/logs/run_20260627_030211.log",
+    "results/runs/20260627_050356/logs/run_20260627_030708.log",
+    "results/runs/20260627_050356/logs/run_20260627_044022.log",
+    "results/runs/20260627_050356/logs/run_20260627_044711.log"
+  ],
+  "stages": {
+    "collect": {
+      "status": "completed",
+      "elapsed_sec": 1245,
+      "note": "45516 docs collected, 22776 duplicates dropped"
+    },
+    "stats": {
+      "status": "completed",
+      "elapsed_sec": 14
+    },
+    "preprocess": {
+      "status": "completed",
+      "elapsed_sec": 90,
+      "note": "45516 docs kept, 0 empty removed"
+    },
+    "vectorize_sbert": {
+      "status": "failed",
+      "error": "Torch not compiled with CUDA enabled"
+    },
+    "vectorize_e5": {
+      "status": "failed",
+      "error": "Torch not compiled with CUDA enabled"
+    },
+    "vectorize_gte": {
+      "status": "failed",
+      "error": "trust_remote_code=True required for Alibaba-NLP/gte-multilingual-base"
+    },
+    "vectorize_bge-m3": {
+      "status": "failed",
+      "error": "Torch not compiled with CUDA enabled"
+    },
+    "vectorize_bert": {
+      "status": "failed",
+      "error": "Torch not compiled with CUDA enabled"
+    },
+    "vectorize_tfidf": {
+      "status": "completed",
+      "elapsed_sec": 41.9,
+      "dim": 300
+    },
+    "vectorize_fasttext": {
+      "status": "completed",
+      "elapsed_sec": 351.5,
+      "dim": 200
+    },
+    "vectorize_doc2vec": {
+      "status": "completed",
+      "elapsed_sec": 122.9,
+      "dim": 200
+    },
+    "analyze": {
+      "status": "completed",
+      "elapsed_sec": 223,
+      "methods": [
+        "doc2vec",
+        "fasttext",
+        "tfidf"
+      ],
+      "figures": 12
+    }
+  },
+  "data": {
+    "n_corpus_docs": 45516,
+    "n_corpus_arxiv": 22312,
+    "n_corpus_pubmed": 23204,
+    "n_duplicates_dropped": 22776,
+    "n_clean_abstract": 45516,
+    "n_methods_ok": 5,
+    "n_methods_failed": 3
+  },
+  "issues": [
+    {
+      "severity": "error",
+      "component": "vectorize",
+      "methods": [
+        "sbert",
+        "e5",
+        "bge-m3",
+        "bert"
+      ],
+      "message": "Torch not compiled with CUDA enabled — reinstall PyTorch with CUDA: run setup-gpu"
+    },
+    {
+      "severity": "error",
+      "component": "vectorize",
+      "methods": [
+        "gte"
+      ],
+      "message": "Alibaba-NLP/gte-multilingual-base requires trust_remote_code=True"
+    },
+    {
+      "severity": "warning",
+      "component": "collect",
+      "message": "PubMed efetch batch failed (600-800): IncompleteRead(1359 bytes read) — retried successfully"
+    },
+    {
+      "severity": "info",
+      "component": "stats",
+      "message": "Language detection returned '[' for 23204 PubMed docs — metadata language field parsing issue"
+    }
+  ],
+  "artifacts": {
+    "reports": [
+      "results/runs/20260627_050356/reports/abstract/semantic_analysis.json",
+      "results/runs/20260627_050356/reports/abstract/semantic_analysis.md",
+      "results/runs/20260627_050356/reports/abstract_subset/semantic_analysis.json",
+      "results/runs/20260627_050356/reports/abstract_subset/semantic_analysis.md",
+      "results/runs/20260627_050356/reports/corpus_stats.json",
+      "results/runs/20260627_050356/reports/full_text/semantic_analysis.json",
+      "results/runs/20260627_050356/reports/full_text/semantic_analysis.md",
+      "results/runs/20260627_050356/reports/semantic_analysis.json",
+      "results/runs/20260627_050356/reports/semantic_analysis.md",
+      "results/runs/20260627_050356/reports/Отчёт_текущее_состояние.md"
+    ],
+    "figures": [
+      "results/runs/20260627_050356/figures/abstract/bert_pca.png",
+      "results/runs/20260627_050356/figures/abstract/bert_umap.png",
+      "results/runs/20260627_050356/figures/abstract/bge-m3_pca.png",
+      "results/runs/20260627_050356/figures/abstract/bge-m3_umap.png",
+      "results/runs/20260627_050356/figures/abstract/doc2vec_pca.png",
+      "results/runs/20260627_050356/figures/abstract/doc2vec_pca_language.png",
+      "results/runs/20260627_050356/figures/abstract/doc2vec_umap.png",
+      "results/runs/20260627_050356/figures/abstract/doc2vec_umap_language.png",
+      "results/runs/20260627_050356/figures/abstract/e5_pca.png",
+      "results/runs/20260627_050356/figures/abstract/e5_umap.png",
+      "results/runs/20260627_050356/figures/abstract/fasttext_pca.png",
+      "results/runs/20260627_050356/figures/abstract/fasttext_pca_language.png",
+      "results/runs/20260627_050356/figures/abstract/fasttext_umap.png",
+      "results/runs/20260627_050356/figures/abstract/fasttext_umap_language.png",
+      "results/runs/20260627_050356/figures/abstract/gte_pca.png",
+      "results/runs/20260627_050356/figures/abstract/gte_umap.png",
+      "results/runs/20260627_050356/figures/abstract/sbert_pca.png",
+      "results/runs/20260627_050356/figures/abstract/sbert_umap.png",
+      "results/runs/20260627_050356/figures/abstract/tfidf_pca.png",
+      "results/runs/20260627_050356/figures/abstract/tfidf_pca_language.png",
+      "results/runs/20260627_050356/figures/abstract/tfidf_umap.png",
+      "results/runs/20260627_050356/figures/abstract/tfidf_umap_language.png",
+      "results/runs/20260627_050356/figures/abstract_subset/bert_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/bert_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/bge-m3_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/bge-m3_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/doc2vec_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/doc2vec_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/e5_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/e5_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/fasttext_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/fasttext_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/gte_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/gte_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/sbert_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/sbert_umap.png",
+      "results/runs/20260627_050356/figures/abstract_subset/tfidf_pca.png",
+      "results/runs/20260627_050356/figures/abstract_subset/tfidf_umap.png",
+      "results/runs/20260627_050356/figures/corpus_lengths.png",
+      "results/runs/20260627_050356/figures/doc2vec_pca.png",
+      "results/runs/20260627_050356/figures/doc2vec_umap.png",
+      "results/runs/20260627_050356/figures/fasttext_pca.png",
+      "results/runs/20260627_050356/figures/fasttext_umap.png",
+      "results/runs/20260627_050356/figures/full_text/bert_pca.png",
+      "results/runs/20260627_050356/figures/full_text/bert_umap.png",
+      "results/runs/20260627_050356/figures/full_text/bge-m3_pca.png",
+      "results/runs/20260627_050356/figures/full_text/bge-m3_umap.png",
+      "results/runs/20260627_050356/figures/full_text/doc2vec_pca.png",
+      "results/runs/20260627_050356/figures/full_text/doc2vec_umap.png",
+      "results/runs/20260627_050356/figures/full_text/e5_pca.png",
+      "results/runs/20260627_050356/figures/full_text/e5_umap.png",
+      "results/runs/20260627_050356/figures/full_text/fasttext_pca.png",
+      "results/runs/20260627_050356/figures/full_text/fasttext_umap.png",
+      "results/runs/20260627_050356/figures/full_text/gte_pca.png",
+      "results/runs/20260627_050356/figures/full_text/gte_umap.png",
+      "results/runs/20260627_050356/figures/full_text/sbert_pca.png",
+      "results/runs/20260627_050356/figures/full_text/sbert_umap.png",
+      "results/runs/20260627_050356/figures/full_text/tfidf_pca.png",
+      "results/runs/20260627_050356/figures/full_text/tfidf_umap.png",
+      "results/runs/20260627_050356/figures/sbert_pca.png",
+      "results/runs/20260627_050356/figures/sbert_umap.png",
+      "results/runs/20260627_050356/figures/tfidf_pca.png",
+      "results/runs/20260627_050356/figures/tfidf_umap.png"
+    ],
+    "embeddings": [
+      {
+        "variant": "abstract",
+        "method": "doc2vec",
+        "size_mb": 34.7,
+        "source": "artefacts/20260627_050356/results/embeddings/abstract/doc2vec.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "e5",
+        "size_mb": 133.3,
+        "source": "artefacts/20260627_050356/results/embeddings/abstract/e5.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "fasttext",
+        "size_mb": 34.7,
+        "source": "artefacts/20260627_050356/results/embeddings/abstract/fasttext.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "sbert",
+        "size_mb": 66.7,
+        "source": "artefacts/20260627_050356/results/embeddings/abstract/sbert.npy"
+      },
+      {
+        "variant": "abstract",
+        "method": "tfidf",
+        "size_mb": 52.1,
+        "source": "artefacts/20260627_050356/results/embeddings/abstract/tfidf.npy"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "doc2vec": {
+    "metrics": {
+      "n_topics": 17,
+      "silhouette_cosine": -0.009,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.4197,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\doc2vec_pca.png",
+      "pca_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\doc2vec_pca_language.png",
+      "umap": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\doc2vec_umap.png",
+      "umap_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\doc2vec_umap_language.png"
+    }
+  },
+  "fasttext": {
+    "metrics": {
+      "n_topics": 17,
+      "silhouette_cosine": -0.044,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.5729,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\fasttext_pca.png",
+      "pca_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\fasttext_pca_language.png",
+      "umap": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\fasttext_umap.png",
+      "umap_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\fasttext_umap_language.png"
+    }
+  },
+  "tfidf": {
+    "metrics": {
+      "n_topics": 17,
+      "silhouette_cosine": 0.0595,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.7123,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\tfidf_pca.png",
+      "pca_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\tfidf_pca_language.png",
+      "umap": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\tfidf_umap.png",
+      "umap_language": "C:\\Users\\Aidar\\Alina\\itmo-research\\results\\figures\\abstract\\tfidf_umap_language.png"
+    }
+  }
+}

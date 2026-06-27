@@ -24,5 +24,68 @@
       "preprocess": "completed",
       "analyze": "completed"
     }
+  },
+  {
+    "run_id": "20260627_050356",
+    "label": null,
+    "started_at": "2026-06-27T03:07:08",
+    "finished_at": "2026-06-27T03:46:32",
+    "status": "completed_partial",
+    "variant": "abstract",
+    "config": "config/corpus_100k_multilingual.yaml",
+    "data": {
+      "n_corpus_docs": 45516,
+      "n_corpus_arxiv": 22312,
+      "n_corpus_pubmed": 23204,
+      "n_duplicates_dropped": 22776,
+      "n_clean_abstract": 45516,
+      "n_methods_ok": 3,
+      "n_methods_failed": 5
+    },
+    "stages": {
+      "collect": "completed",
+      "stats": "completed",
+      "preprocess": "completed",
+      "vectorize_tfidf": "completed",
+      "vectorize_fasttext": "completed",
+      "vectorize_doc2vec": "completed",
+      "vectorize_sbert": "failed",
+      "vectorize_e5": "failed",
+      "vectorize_gte": "failed",
+      "vectorize_bge-m3": "failed",
+      "vectorize_bert": "failed",
+      "analyze": "completed"
+    }
+  },
+  {
+    "run_id": "20260627_142823",
+    "label": null,
+    "started_at": "2026-06-27T05:04:53",
+    "finished_at": "2026-06-27T06:15:16",
+    "status": "completed",
+    "variant": "abstract",
+    "config": "config/corpus_100k_multilingual.yaml",
+    "data": {
+      "n_corpus_docs": 45581,
+      "n_corpus_arxiv": 22312,
+      "n_corpus_pubmed": 23269,
+      "n_clean_abstract": 45581,
+      "n_methods_ok": 8,
+      "n_methods_failed": 0
+    },
+    "stages": {
+      "vectorize_sbert": "ok",
+      "vectorize_tfidf": "ok",
+      "vectorize_doc2vec": "ok",
+      "vectorize_fasttext": "ok",
+      "vectorize_bert": "ok",
+      "vectorize_bge-m3": "ok",
+      "vectorize_e5": "ok",
+      "vectorize_gte": "ok",
+      "collect": "completed",
+      "stats": "completed",
+      "preprocess": "completed",
+      "analyze": "completed"
+    }
   }
 ]
