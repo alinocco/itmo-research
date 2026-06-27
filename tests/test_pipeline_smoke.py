@@ -6,7 +6,7 @@ import pytest
 from textvec.analysis.semantic import topic_separability
 from textvec.config import load_config
 from textvec.preprocessing import preprocess_corpus
-from textvec.vectorization.registry import build_vectorizer
+from textvec.vectorization.registry import _needs_trust_remote_code, build_vectorizer
 
 
 @pytest.fixture
@@ -44,3 +44,12 @@ def test_topic_separability_metrics(tiny_corpus, tmp_path):
     metrics = topic_separability(result.embeddings, clean["topic"].tolist())
     assert metrics["n_topics"] == 2
     assert "knn_topic_purity" in metrics
+
+
+def test_gte_trust_remote_code_for_alibaba_model():
+    assert _needs_trust_remote_code("Alibaba-NLP/gte-multilingual-base")
+    assert not _needs_trust_remote_code("thenlper/gte-base")
+
+    cfg = load_config("config/corpus_100k_multilingual.yaml")
+    vec = build_vectorizer("gte", cfg)
+    assert vec.params.get("trust_remote_code") is True

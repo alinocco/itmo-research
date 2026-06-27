@@ -1,12 +1,21 @@
 # Multilingual corpus (~100k documents) for RTX 4070 / 32 GB RAM.
 #
-# Target mix (before deduplication):
-#   ArXiv (EN)     : 12 topics × 2000 = 24 000
-#   PubMed (EN)    :  8 topics × 2000 = 16 000
-#   PubMed (other) :  8 langs × 4 topics × 2000 = 64 000
-#   Total          : ~104 000  → expect ~95–100k after dedup
+# Target mix (before deduplication, v2 — tuned after first run yielded ~45k):
+#   ArXiv (EN)     : 19 topics × 2000 = 38 000
+#   PubMed         : 57 queries × 2000 ≈ 114 000 (actual yield varies by language)
+#   Total raw      : ~152 000
+#
+# Realistic expectation after dedup: 70–85k unique documents.
+#   • fr/es/pt: broader terms + extra topics (PubMed has few indexed articles per narrow query)
+#   • EN PubMed: 8 non-overlapping topics (removed duplicate oncology/cardiology/neurology pairs)
+#   • zh/ja: extra subtopics to reduce cross-query overlap
+#   • ArXiv: +8 categories, removed cs.CL/nlp duplicate
 #
 # Languages: en, ru, de, fr, es, zh, ja, pt (+ en from ArXiv)
+#
+# Re-collect only (keeps existing embeddings until you re-run vectorize):
+#   python -m textvec --config config/corpus_100k_multilingual.yaml collect
+#   python -m textvec --config config/corpus_100k_multilingual.yaml stats
 #
 # Usage:
 #   python -m textvec collect --config config/corpus_100k_multilingual.yaml
@@ -23,7 +32,7 @@
 project:
   seed: 42
   language: multilingual     # informational; preprocessing.strategy handles per-doc routing
-  device: cuda               # RTX 4070; use "auto" if unsure
+  device: auto               # auto | cuda | cpu — use auto; run setup-gpu for RTX 4070
 
 experiment:
   variant: abstract
@@ -48,7 +57,7 @@ corpus:
         - {topic: machine_learning,       search: "cat:cs.LG",           max_results: 2000}
         - {topic: computation_language,    search: "cat:cs.CL",           max_results: 2000}
         - {topic: computer_vision,        search: "cat:cs.CV",           max_results: 2000}
-        - {topic: nlp,                    search: "cat:cs.CL AND all:nlp", max_results: 2000}
+        - {topic: artificial_intelligence, search: "cat:cs.AI",           max_results: 2000}
         - {topic: robotics,               search: "cat:cs.RO",           max_results: 2000}
         - {topic: cryptography_security,  search: "cat:cs.CR",           max_results: 2000}
         - {topic: astrophysics,           search: "cat:astro-ph.GA",     max_results: 2000}
@@ -57,55 +66,83 @@ corpus:
         - {topic: software_engineering,   search: "cat:cs.SE",           max_results: 2000}
         - {topic: information_theory,     search: "cat:cs.IT",           max_results: 2000}
         - {topic: quantum_computing,      search: "cat:quant-ph",        max_results: 2000}
+        - {topic: information_retrieval,  search: "cat:cs.IR",           max_results: 2000}
+        - {topic: neural_computing,       search: "cat:cs.NE",           max_results: 2000}
+        - {topic: databases,              search: "cat:cs.DB",           max_results: 2000}
+        - {topic: human_computer,         search: "cat:cs.HC",           max_results: 2000}
+        - {topic: optimization,           search: "cat:math.OC",         max_results: 2000}
+        - {topic: econometrics,           search: "cat:econ.EM",         max_results: 2000}
+        - {topic: audio_speech,           search: "cat:eess.AS",         max_results: 2000}
     pubmed:
       enabled: true
       email: "research@example.com"        # ← replace in config/secrets.local.yaml
       api_key: null                        # ← set in config/secrets.local.yaml (10 req/s vs 3)
       queries:
-        # --- English (16k) ---
-        - {topic: oncology,      term: "cancer immunotherapy",              language: en, max_results: 2000}
-        - {topic: cardiology,    term: "myocardial infarction treatment",     language: en, max_results: 2000}
-        - {topic: neurology,     term: "alzheimer disease",                   language: en, max_results: 2000}
-        - {topic: endocrinology, term: "diabetes mellitus treatment",         language: en, max_results: 2000}
-        - {topic: infectious,    term: "vaccine efficacy clinical trial",     language: en, max_results: 2000}
-        - {topic: oncology,      term: "breast cancer therapy",               language: en, max_results: 2000}
-        - {topic: cardiology,    term: "heart failure management",            language: en, max_results: 2000}
-        - {topic: neurology,     term: "stroke rehabilitation",               language: en, max_results: 2000}
-        # --- Russian (8k) ---
-        - {topic: oncology,      term: "рак иммунотерапия",                   language: ru, max_results: 2000}
-        - {topic: cardiology,    term: "инфаркт миокарда лечение",            language: ru, max_results: 2000}
-        - {topic: neurology,     term: "болезнь альцгеймера",                 language: ru, max_results: 2000}
-        - {topic: endocrinology, term: "сахарный диабет лечение",             language: ru, max_results: 2000}
-        # --- German (8k) ---
-        - {topic: oncology,      term: "Krebs Immuntherapie",                 language: de, max_results: 2000}
-        - {topic: cardiology,    term: "Myokardinfarkt Behandlung",           language: de, max_results: 2000}
-        - {topic: neurology,     term: "Alzheimer Krankheit",                 language: de, max_results: 2000}
-        - {topic: endocrinology, term: "Diabetes mellitus Therapie",          language: de, max_results: 2000}
-        # --- French (8k) ---
-        - {topic: oncology,      term: "cancer immunothérapie",               language: fr, max_results: 2000}
-        - {topic: cardiology,    term: "infarctus du myocarde traitement",    language: fr, max_results: 2000}
-        - {topic: neurology,     term: "maladie Alzheimer",                   language: fr, max_results: 2000}
-        - {topic: endocrinology, term: "diabète sucré traitement",            language: fr, max_results: 2000}
-        # --- Spanish (8k) ---
-        - {topic: oncology,      term: "cáncer inmunoterapia",                language: es, max_results: 2000}
-        - {topic: cardiology,    term: "infarto de miocardio tratamiento",    language: es, max_results: 2000}
-        - {topic: neurology,     term: "enfermedad de Alzheimer",             language: es, max_results: 2000}
-        - {topic: endocrinology, term: "diabetes mellitus tratamiento",       language: es, max_results: 2000}
-        # --- Chinese (8k) ---
-        - {topic: oncology,      term: "癌症 免疫治疗",                        language: zh, max_results: 2000}
-        - {topic: cardiology,    term: "心肌梗死 治疗",                        language: zh, max_results: 2000}
-        - {topic: neurology,     term: "阿尔茨海默病",                         language: zh, max_results: 2000}
-        - {topic: endocrinology, term: "糖尿病 治疗",                          language: zh, max_results: 2000}
-        # --- Japanese (8k) ---
-        - {topic: oncology,      term: "がん 免疫療法",                         language: ja, max_results: 2000}
-        - {topic: cardiology,    term: "心筋梗塞 治療",                         language: ja, max_results: 2000}
-        - {topic: neurology,     term: "アルツハイマー病",                      language: ja, max_results: 2000}
-        - {topic: endocrinology, term: "糖尿病 治療",                           language: ja, max_results: 2000}
-        # --- Portuguese (8k) ---
-        - {topic: oncology,      term: "câncer imunoterapia",                 language: pt, max_results: 2000}
-        - {topic: cardiology,    term: "infarto do miocárdio tratamento",     language: pt, max_results: 2000}
-        - {topic: neurology,     term: "doença de Alzheimer",                 language: pt, max_results: 2000}
-        - {topic: endocrinology, term: "diabetes mellitus tratamento",        language: pt, max_results: 2000}
+        # --- English (8 distinct topics, no pairwise overlap) ---
+        - {topic: oncology,      term: "cancer immunotherapy",                  language: en, max_results: 2000}
+        - {topic: cardiology,    term: "myocardial infarction",                 language: en, max_results: 2000}
+        - {topic: neurology,     term: "alzheimer disease",                     language: en, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes mellitus",                     language: en, max_results: 2000}
+        - {topic: infectious,    term: "vaccine efficacy",                    language: en, max_results: 2000}
+        - {topic: psychiatry,    term: "depression treatment",                  language: en, max_results: 2000}
+        - {topic: immunology,    term: "rheumatoid arthritis therapy",          language: en, max_results: 2000}
+        - {topic: genetics,      term: "genome wide association study",         language: en, max_results: 2000}
+        # --- Russian (broader terms + 2 extra topics) ---
+        - {topic: oncology,      term: "рак лечение",                           language: ru, max_results: 2000}
+        - {topic: cardiology,    term: "инфаркт миокарда",                      language: ru, max_results: 2000}
+        - {topic: neurology,     term: "болезнь альцгеймера",                   language: ru, max_results: 2000}
+        - {topic: endocrinology, term: "сахарный диабет",                       language: ru, max_results: 2000}
+        - {topic: infectious,    term: "вакцина эффективность",                 language: ru, max_results: 2000}
+        - {topic: psychiatry,    term: "депрессия лечение",                     language: ru, max_results: 2000}
+        # --- German ---
+        - {topic: oncology,      term: "Krebs Therapie",                        language: de, max_results: 2000}
+        - {topic: cardiology,    term: "Myokardinfarkt",                        language: de, max_results: 2000}
+        - {topic: neurology,     term: "Alzheimer Krankheit",                   language: de, max_results: 2000}
+        - {topic: endocrinology, term: "Diabetes mellitus",                     language: de, max_results: 2000}
+        - {topic: infectious,    term: "Impfstoff Wirksamkeit",                 language: de, max_results: 2000}
+        - {topic: psychiatry,    term: "Depression Behandlung",                 language: de, max_results: 2000}
+        # --- French (broad terms; PubMed indexes few fr articles per narrow query) ---
+        - {topic: oncology,      term: "cancer",                                language: fr, max_results: 2000}
+        - {topic: cardiology,    term: "infarctus myocarde",                    language: fr, max_results: 2000}
+        - {topic: neurology,     term: "alzheimer",                             language: fr, max_results: 2000}
+        - {topic: endocrinology, term: "diabète",                               language: fr, max_results: 2000}
+        - {topic: infectious,    term: "vaccin efficacité",                     language: fr, max_results: 2000}
+        - {topic: psychiatry,    term: "dépression traitement",                 language: fr, max_results: 2000}
+        - {topic: immunology,    term: "arthrite rhumatoïde",                   language: fr, max_results: 2000}
+        # --- Spanish ---
+        - {topic: oncology,      term: "cáncer",                                language: es, max_results: 2000}
+        - {topic: cardiology,    term: "infarto miocardio",                     language: es, max_results: 2000}
+        - {topic: neurology,     term: "alzheimer",                             language: es, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes",                              language: es, max_results: 2000}
+        - {topic: infectious,    term: "vacuna eficacia",                       language: es, max_results: 2000}
+        - {topic: psychiatry,    term: "depresión tratamiento",                 language: es, max_results: 2000}
+        - {topic: immunology,    term: "artritis reumatoide",                   language: es, max_results: 2000}
+        # --- Chinese (core + distinct subtopics) ---
+        - {topic: oncology,      term: "癌症 免疫治疗",                            language: zh, max_results: 2000}
+        - {topic: cardiology,    term: "心肌梗死 治疗",                            language: zh, max_results: 2000}
+        - {topic: neurology,     term: "阿尔茨海默病",                             language: zh, max_results: 2000}
+        - {topic: endocrinology, term: "糖尿病 治疗",                              language: zh, max_results: 2000}
+        - {topic: oncology,      term: "肺癌 治疗",                                language: zh, max_results: 2000}
+        - {topic: cardiology,    term: "高血压 治疗",                              language: zh, max_results: 2000}
+        - {topic: neurology,     term: "帕金森病",                                 language: zh, max_results: 2000}
+        - {topic: infectious,    term: "疫苗 有效性",                              language: zh, max_results: 2000}
+        # --- Japanese ---
+        - {topic: oncology,      term: "がん 免疫療法",                             language: ja, max_results: 2000}
+        - {topic: cardiology,    term: "心筋梗塞 治療",                             language: ja, max_results: 2000}
+        - {topic: neurology,     term: "アルツハイマー病",                          language: ja, max_results: 2000}
+        - {topic: endocrinology, term: "糖尿病 治療",                               language: ja, max_results: 2000}
+        - {topic: oncology,      term: "肺がん 治療",                               language: ja, max_results: 2000}
+        - {topic: cardiology,    term: "高血圧 治療",                               language: ja, max_results: 2000}
+        - {topic: neurology,     term: "パーキンソン病",                            language: ja, max_results: 2000}
+        - {topic: infectious,    term: "ワクチン 有効性",                           language: ja, max_results: 2000}
+        # --- Portuguese (very broad; low indexed volume in PubMed) ---
+        - {topic: oncology,      term: "câncer",                                language: pt, max_results: 2000}
+        - {topic: cardiology,    term: "infarto miocárdio",                     language: pt, max_results: 2000}
+        - {topic: neurology,     term: "alzheimer",                             language: pt, max_results: 2000}
+        - {topic: endocrinology, term: "diabetes",                              language: pt, max_results: 2000}
+        - {topic: infectious,    term: "vacina",                                language: pt, max_results: 2000}
+        - {topic: psychiatry,    term: "depressão",                             language: pt, max_results: 2000}
+        - {topic: immunology,    term: "artrite reumatoide",                    language: pt, max_results: 2000}
   raw_dir: data/raw
   corpus_csv: data/processed/corpus_100k.csv
   corpus_json: data/processed/corpus_100k.json
@@ -159,6 +196,7 @@ vectorization:
       bge-m3: BAAI/bge-m3
       e5: intfloat/multilingual-e5-base
       gte: Alibaba-NLP/gte-multilingual-base
+    trust_remote_code: true      # required for Alibaba-NLP/gte-multilingual-base
     batch_size: 8              # safe for RTX 4070 12 GB (raise to 16 for sbert/e5 if fits)
     max_seq_length: 512
     normalize_embeddings: true

@@ -35,8 +35,13 @@ class TransformerVectorizer(BaseVectorizer):
         from sentence_transformers import SentenceTransformer
 
         device = resolve_device(self.params.get("device", "auto"))
+        trust_remote_code = bool(self.params.get("trust_remote_code", False))
         logger.info("Loading '%s' on %s ...", self.model_name, device)
-        model = SentenceTransformer(self.model_name, device=device)
+        model = SentenceTransformer(
+            self.model_name,
+            device=device,
+            trust_remote_code=trust_remote_code,
+        )
 
         max_seq = self.params.get("max_seq_length")
         if max_seq:
