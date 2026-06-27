@@ -3,6 +3,10 @@
 Experiment variants (abstract / full_text / abstract_subset) keep their own
 clean corpus and output folders, so results never overwrite each other.
 
+Every invocation is automatically tracked by :mod:`textvec.run_registry`:
+a versioned snapshot is created under ``results/runs/<RUN_ID>/`` containing
+the run manifest, copies of figures and reports, and references to embeddings.
+
 Examples
 --------
     python -m textvec collect
@@ -12,10 +16,12 @@ Examples
     python -m textvec vectorize  --variant full_text --methods sbert bge-m3
     python -m textvec analyze    --variant full_text
     python -m textvec all        --variant abstract --methods tfidf doc2vec sbert
+    python -m textvec runs                              # list all recorded runs
 """
 from __future__ import annotations
 
 import argparse
+import time
 from types import SimpleNamespace
 
 import numpy as np
@@ -26,6 +32,7 @@ from .analysis.stats import corpus_statistics, print_statistics, save_statistics
 from .analysis.visualize import plot_corpus_lengths
 from .config import load_config, resolve_path
 from .preprocessing import preprocess_corpus
+from .run_registry import RunRegistry, list_runs
 from .utils import get_logger, set_seed
 from .vectorization.run import run_vectorization
 
@@ -66,6 +73,9 @@ def cmd_collect(cfg, args) -> pd.DataFrame:
 
     df = build_corpus(cfg)
     logger.info("Collected %d documents.", len(df))
+    registry: RunRegistry | None = getattr(args, "_registry", None)
+    if registry is not None:
+        registry.record_data("n_corpus_docs", len(df))
     return df
 
 
@@ -104,7 +114,11 @@ def cmd_fulltext(cfg, args) -> pd.DataFrame:
 def cmd_preprocess(cfg, args) -> pd.DataFrame:
     vp = _variant_paths(cfg, _resolve_variant(cfg, args))
     df = _load_csv(vp.source_csv)
-    return preprocess_corpus(df, cfg, text_fields=vp.text_fields, output_csv=vp.clean_csv)
+    result = preprocess_corpus(df, cfg, text_fields=vp.text_fields, output_csv=vp.clean_csv)
+    registry: RunRegistry | None = getattr(args, "_registry", None)
+    if registry is not None:
+        registry.record_data(f"n_clean_{vp.name}", len(result))
+    return result
 
 
 def cmd_vectorize(cfg, args):
@@ -132,13 +146,64 @@ def cmd_analyze(cfg, args) -> dict:
 
 
 def cmd_all(cfg, args):
-    cmd_collect(cfg, args)
-    cmd_stats(cfg, args)
-    cmd_preprocess(cfg, args)
-    cmd_vectorize(cfg, args)
-    cmd_analyze(cfg, args)
+    registry: RunRegistry | None = getattr(args, "_registry", None)
+
+    stages = [
+        ("collect", cmd_collect),
+        ("stats", cmd_stats),
+        ("preprocess", cmd_preprocess),
+        ("vectorize", cmd_vectorize),
+        ("analyze", cmd_analyze),
+    ]
+    for stage_name, stage_fn in stages:
+        t0 = time.monotonic()
+        try:
+            stage_fn(cfg, args)
+            elapsed = time.monotonic() - t0
+            if registry is not None:
+                registry.record_stage(stage_name, "completed", elapsed_sec=elapsed)
+        except Exception as exc:
+            elapsed = time.monotonic() - t0
+            if registry is not None:
+                registry.record_stage(
+                    stage_name, "failed", elapsed_sec=elapsed,
+                    extra={"error": str(exc)[:300]},
+                )
+            raise
+
     logger.info("Full pipeline finished for variant '%s'.", _resolve_variant(cfg, args))
 
+
+def cmd_runs(_cfg, _args) -> None:
+    """Print a table of all recorded pipeline runs."""
+    runs = list_runs()
+    if not runs:
+        print("No runs recorded yet. Run the pipeline first.")
+        return
+
+    col_w = {"run_id": 17, "label": 12, "status": 10, "variant": 18, "started_at": 25, "data": 30}
+    header = (
+        f"{'RUN ID':<{col_w['run_id']}}  "
+        f"{'LABEL':<{col_w['label']}}  "
+        f"{'STATUS':<{col_w['status']}}  "
+        f"{'VARIANT':<{col_w['variant']}}  "
+        f"{'STARTED':<{col_w['started_at']}}  "
+        f"DATA VOLUMES"
+    )
+    print(header)
+    print("-" * len(header))
+    for r in runs:
+        data = r.get("data", {})
+        data_str = "  ".join(f"{k}={v:,}" if isinstance(v, int) else f"{k}={v}"
+                             for k, v in data.items()) or "—"
+        print(
+            f"{r['run_id']:<{col_w['run_id']}}  "
+            f"{str(r.get('label') or ''):<{col_w['label']}}  "
+            f"{r.get('status', '?'):<{col_w['status']}}  "
+            f"{str(r.get('variant', '?')):<{col_w['variant']}}  "
+            f"{str(r.get('started_at', '?'))[:24]:<{col_w['started_at']}}  "
+            f"{data_str}"
+        )
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="textvec", description=__doc__,
@@ -154,6 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
         "vectorize": cmd_vectorize,
         "analyze": cmd_analyze,
         "all": cmd_all,
+        "runs": cmd_runs,
     }
     for name, func in specs.items():
         p = sub.add_parser(name, help=(func.__doc__ or "").strip().splitlines()[0] if func.__doc__ else name)
@@ -175,8 +241,88 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     cfg = load_config(args.config)
     set_seed(cfg.project.get("seed", 42))
-    args.func(cfg, args)
+
+    # ``runs`` is a read-only listing command – skip run tracking for it.
+    if args.command == "runs":
+        args.func(cfg, args)
+        return
+
+    registry = RunRegistry()
+    variant = getattr(args, "variant", None) or cfg.experiment.get("variant", "abstract")    registry.set_config(args.config or "config/default.yaml", variant=variant)
+    args._registry = registry
+
+    t0 = time.monotonic()
+    run_status = "completed"
+    try:
+        args.func(cfg, args)
+        # For single-stage commands (not "all"), record the stage timing here.
+        if args.command != "all":
+            registry.record_stage(
+                args.command, "completed", elapsed_sec=time.monotonic() - t0
+            )
+    except Exception as exc:
+        run_status = "failed"
+        if args.command != "all":
+            registry.record_stage(
+                args.command, "failed",
+                elapsed_sec=time.monotonic() - t0,
+                extra={"error": str(exc)[:300]},
+            )
+        raise
+    finally:
+        _finalize_registry(registry, cfg, variant, run_status)
+
+
+def _finalize_registry(
+    registry: RunRegistry, cfg, variant: str, status: str
+) -> None:
+    """Collect data volumes from filesystem, snapshot artifacts, finalize."""
+    try:
+        # Data volumes — read from CSV headers (cheap, no full load).
+        corpus_csv = resolve_path(cfg.corpus.corpus_csv)
+        if corpus_csv.exists():
+            with corpus_csv.open(encoding="utf-8") as fh:
+                n = sum(1 for _ in fh) - 1
+            registry.record_data("n_corpus_docs", max(0, n))
+
+        clean_csv = resolve_path(f"data/processed/clean_{variant}.csv")
+        if clean_csv.exists():
+            with clean_csv.open(encoding="utf-8") as fh:
+                n = sum(1 for _ in fh) - 1
+            registry.record_data(f"n_clean_{variant}", max(0, n))
+
+        # Snapshot per-variant artifacts.
+        try:
+            vp = _variant_paths(cfg, variant)
+            fig_dir = resolve_path(vp.fig_dir)
+            rep_dir = resolve_path(vp.rep_dir)
+            emb_dir = resolve_path(vp.emb_dir)
+            registry.snapshot_artifacts(
+                figures_dir=fig_dir if fig_dir.exists() else None,
+                reports_dir=rep_dir if rep_dir.exists() else None,
+                emb_dir=emb_dir if emb_dir.exists() else None,
+            )
+        except Exception as exc:
+            logger.warning("Artifact snapshot skipped: %s", exc)
+
+        # Also snapshot root-level stats report if present.
+        root_rep = resolve_path(cfg.analysis.get("reports_dir", "results/reports"))
+        stats_json = root_rep / "corpus_stats.json"
+        if stats_json.exists():
+            import json as _json
+            try:
+                s = _json.loads(stats_json.read_text(encoding="utf-8"))
+                if "n_documents" in s:
+                    registry.record_data("n_documents_stats", s["n_documents"])
+            except Exception:
+                pass
+
+    except Exception as exc:
+        logger.warning("Registry finalization error: %s", exc)
+    finally:
+        registry.finalize(status)
 
 
 if __name__ == "__main__":
     main()
+

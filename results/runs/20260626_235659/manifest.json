@@ -1,0 +1,297 @@
+{
+  "run_id": "20260626_235659",
+  "label": "15k",
+  "started_at": "2026-06-20T19:24:03+00:00",
+  "finished_at": "2026-06-26T17:56:59+00:00",
+  "status": "completed",
+  "config": "config/default.yaml",
+  "variant": "abstract + abstract_subset + full_text",
+  "note": "Retrospective snapshot of pre-existing results (all 3 variants).",
+  "command": "python -m textvec all --methods tfidf doc2vec sbert",
+  "logs": [
+    "results/runs/20260626_235659/logs/terminal_run.log"
+  ],
+  "stages": {
+    "vectorize_abstract": {
+      "status": "completed",
+      "elapsed_sec": 12593.9,
+      "methods": [
+        "sbert",
+        "tfidf",
+        "doc2vec",
+        "fasttext",
+        "bert",
+        "bge-m3",
+        "e5",
+        "gte"
+      ]
+    },
+    "vectorize_abstract_subset": {
+      "status": "completed",
+      "elapsed_sec": 142.3,
+      "methods": [
+        "tfidf",
+        "fasttext",
+        "doc2vec",
+        "sbert",
+        "bert",
+        "bge-m3",
+        "e5",
+        "gte"
+      ]
+    },
+    "vectorize_full_text": {
+      "status": "completed",
+      "elapsed_sec": 4368.5,
+      "methods": [
+        "tfidf",
+        "fasttext",
+        "doc2vec",
+        "sbert",
+        "bert",
+        "bge-m3",
+        "e5",
+        "gte"
+      ]
+    },
+    "collect": {
+      "status": "completed"
+    },
+    "stats": {
+      "status": "completed"
+    },
+    "preprocess": {
+      "status": "completed"
+    },
+    "analyze": {
+      "status": "completed"
+    }
+  },
+  "data": {
+    "n_corpus_docs": 15431,
+    "n_corpus_arxiv": 9618,
+    "n_corpus_pubmed": 5813,
+    "n_clean_abstract": 15431,
+    "n_clean_abstract_subset": 300,
+    "n_clean_full_text": 300
+  },
+  "artifacts": {
+    "reports": [
+      "results/reports/abstract/semantic_analysis.json",
+      "results/reports/abstract/semantic_analysis.md",
+      "results/reports/abstract_subset/semantic_analysis.json",
+      "results/reports/abstract_subset/semantic_analysis.md",
+      "results/reports/corpus_stats.json",
+      "results/reports/full_text/semantic_analysis.json",
+      "results/reports/full_text/semantic_analysis.md",
+      "results/reports/semantic_analysis.json",
+      "results/reports/semantic_analysis.md",
+      "results/reports/Отчёт_текущее_состояние.md"
+    ],
+    "figures": [
+      "results/figures/abstract/bert_pca.png",
+      "results/figures/abstract/bert_umap.png",
+      "results/figures/abstract/bge-m3_pca.png",
+      "results/figures/abstract/bge-m3_umap.png",
+      "results/figures/abstract/doc2vec_pca.png",
+      "results/figures/abstract/doc2vec_umap.png",
+      "results/figures/abstract/e5_pca.png",
+      "results/figures/abstract/e5_umap.png",
+      "results/figures/abstract/fasttext_pca.png",
+      "results/figures/abstract/fasttext_umap.png",
+      "results/figures/abstract/gte_pca.png",
+      "results/figures/abstract/gte_umap.png",
+      "results/figures/abstract/sbert_pca.png",
+      "results/figures/abstract/sbert_umap.png",
+      "results/figures/abstract/tfidf_pca.png",
+      "results/figures/abstract/tfidf_umap.png",
+      "results/figures/abstract_subset/bert_pca.png",
+      "results/figures/abstract_subset/bert_umap.png",
+      "results/figures/abstract_subset/bge-m3_pca.png",
+      "results/figures/abstract_subset/bge-m3_umap.png",
+      "results/figures/abstract_subset/doc2vec_pca.png",
+      "results/figures/abstract_subset/doc2vec_umap.png",
+      "results/figures/abstract_subset/e5_pca.png",
+      "results/figures/abstract_subset/e5_umap.png",
+      "results/figures/abstract_subset/fasttext_pca.png",
+      "results/figures/abstract_subset/fasttext_umap.png",
+      "results/figures/abstract_subset/gte_pca.png",
+      "results/figures/abstract_subset/gte_umap.png",
+      "results/figures/abstract_subset/sbert_pca.png",
+      "results/figures/abstract_subset/sbert_umap.png",
+      "results/figures/abstract_subset/tfidf_pca.png",
+      "results/figures/abstract_subset/tfidf_umap.png",
+      "results/figures/corpus_lengths.png",
+      "results/figures/doc2vec_pca.png",
+      "results/figures/doc2vec_umap.png",
+      "results/figures/fasttext_pca.png",
+      "results/figures/fasttext_umap.png",
+      "results/figures/full_text/bert_pca.png",
+      "results/figures/full_text/bert_umap.png",
+      "results/figures/full_text/bge-m3_pca.png",
+      "results/figures/full_text/bge-m3_umap.png",
+      "results/figures/full_text/doc2vec_pca.png",
+      "results/figures/full_text/doc2vec_umap.png",
+      "results/figures/full_text/e5_pca.png",
+      "results/figures/full_text/e5_umap.png",
+      "results/figures/full_text/fasttext_pca.png",
+      "results/figures/full_text/fasttext_umap.png",
+      "results/figures/full_text/gte_pca.png",
+      "results/figures/full_text/gte_umap.png",
+      "results/figures/full_text/sbert_pca.png",
+      "results/figures/full_text/sbert_umap.png",
+      "results/figures/full_text/tfidf_pca.png",
+      "results/figures/full_text/tfidf_umap.png",
+      "results/figures/sbert_pca.png",
+      "results/figures/sbert_umap.png",
+      "results/figures/tfidf_pca.png",
+      "results/figures/tfidf_umap.png"
+    ],
+    "embeddings": [
+      {
+        "variant": "abstract",
+        "method": "bert",
+        "path": "results/embeddings/abstract/bert.npy",
+        "size_mb": 45.2
+      },
+      {
+        "variant": "abstract",
+        "method": "bge-m3",
+        "path": "results/embeddings/abstract/bge-m3.npy",
+        "size_mb": 60.3
+      },
+      {
+        "variant": "abstract",
+        "method": "doc2vec",
+        "path": "results/embeddings/abstract/doc2vec.npy",
+        "size_mb": 11.8
+      },
+      {
+        "variant": "abstract",
+        "method": "e5",
+        "path": "results/embeddings/abstract/e5.npy",
+        "size_mb": 45.2
+      },
+      {
+        "variant": "abstract",
+        "method": "fasttext",
+        "path": "results/embeddings/abstract/fasttext.npy",
+        "size_mb": 11.8
+      },
+      {
+        "variant": "abstract",
+        "method": "gte",
+        "path": "results/embeddings/abstract/gte.npy",
+        "size_mb": 45.2
+      },
+      {
+        "variant": "abstract",
+        "method": "sbert",
+        "path": "results/embeddings/abstract/sbert.npy",
+        "size_mb": 22.6
+      },
+      {
+        "variant": "abstract",
+        "method": "tfidf",
+        "path": "results/embeddings/abstract/tfidf.npy",
+        "size_mb": 17.7
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "bert",
+        "path": "results/embeddings/abstract_subset/bert.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "bge-m3",
+        "path": "results/embeddings/abstract_subset/bge-m3.npy",
+        "size_mb": 1.2
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "doc2vec",
+        "path": "results/embeddings/abstract_subset/doc2vec.npy",
+        "size_mb": 0.2
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "e5",
+        "path": "results/embeddings/abstract_subset/e5.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "fasttext",
+        "path": "results/embeddings/abstract_subset/fasttext.npy",
+        "size_mb": 0.2
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "gte",
+        "path": "results/embeddings/abstract_subset/gte.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "sbert",
+        "path": "results/embeddings/abstract_subset/sbert.npy",
+        "size_mb": 0.4
+      },
+      {
+        "variant": "abstract_subset",
+        "method": "tfidf",
+        "path": "results/embeddings/abstract_subset/tfidf.npy",
+        "size_mb": 0.3
+      },
+      {
+        "variant": "full_text",
+        "method": "bert",
+        "path": "results/embeddings/full_text/bert.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "full_text",
+        "method": "bge-m3",
+        "path": "results/embeddings/full_text/bge-m3.npy",
+        "size_mb": 1.2
+      },
+      {
+        "variant": "full_text",
+        "method": "doc2vec",
+        "path": "results/embeddings/full_text/doc2vec.npy",
+        "size_mb": 0.2
+      },
+      {
+        "variant": "full_text",
+        "method": "e5",
+        "path": "results/embeddings/full_text/e5.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "full_text",
+        "method": "fasttext",
+        "path": "results/embeddings/full_text/fasttext.npy",
+        "size_mb": 0.2
+      },
+      {
+        "variant": "full_text",
+        "method": "gte",
+        "path": "results/embeddings/full_text/gte.npy",
+        "size_mb": 0.9
+      },
+      {
+        "variant": "full_text",
+        "method": "sbert",
+        "path": "results/embeddings/full_text/sbert.npy",
+        "size_mb": 0.4
+      },
+      {
+        "variant": "full_text",
+        "method": "tfidf",
+        "path": "results/embeddings/full_text/tfidf.npy",
+        "size_mb": 0.3
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "run_id": "20260626_235659",
+    "label": "15k",
+    "started_at": "2026-06-20T19:24:03+00:00",
+    "finished_at": "2026-06-26T17:56:59+00:00",
+    "status": "completed",
+    "variant": "abstract + abstract_subset + full_text",
+    "config": "config/default.yaml",
+    "data": {
+      "n_corpus_docs": 15431,
+      "n_corpus_arxiv": 9618,
+      "n_corpus_pubmed": 5813,
+      "n_clean_abstract": 15431,
+      "n_clean_abstract_subset": 300,
+      "n_clean_full_text": 300
+    },
+    "stages": {
+      "vectorize_abstract": "completed",
+      "vectorize_abstract_subset": "completed",
+      "vectorize_full_text": "completed",
+      "collect": "completed",
+      "stats": "completed",
+      "preprocess": "completed",
+      "analyze": "completed"
+    }
+  }
+]

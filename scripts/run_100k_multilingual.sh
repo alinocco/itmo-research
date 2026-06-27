@@ -18,9 +18,11 @@ cd "$ROOT"
 CONFIG="${CONFIG:-config/corpus_100k_multilingual.yaml}"
 VARIANT="${VARIANT:-abstract}"
 VENV="${VENV:-$ROOT/.venv}"
-LOG_DIR="${LOG_DIR:-$ROOT/results/logs}"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-$LOG_DIR/run_${TIMESTAMP}.log}"
+export TEXTVEC_RUN_ID="${TEXTVEC_RUN_ID:-$TIMESTAMP}"
+export TEXTVEC_RUN_LABEL="${TEXTVEC_RUN_LABEL:-}"
+LOG_DIR="${LOG_DIR:-$ROOT/results/logs}"
+LOG_FILE="${LOG_FILE:-$LOG_DIR/run_${TEXTVEC_RUN_ID}.log}"
 
 SPACY_MODELS=(
   en_core_web_sm
@@ -173,16 +175,33 @@ cmd_analyze() {
 cmd_all() {
   mkdir -p "$LOG_DIR"
   log "=== FULL PIPELINE START (config=$CONFIG, variant=$VARIANT) ==="
-  log "Log file: $LOG_FILE"
+  log "Run ID    : $TEXTVEC_RUN_ID"
+  log "Log file  : $LOG_FILE"
   cmd_collect
   cmd_stats
   cmd_preprocess
   cmd_vectorize
   cmd_analyze
   log "=== FULL PIPELINE COMPLETE ==="
-  log "Figures : results/figures/$VARIANT/"
-  log "Reports : results/reports/$VARIANT/"
+  log "Figures   : results/figures/$VARIANT/"
+  log "Reports   : results/reports/$VARIANT/"
   log "Embeddings: results/embeddings/$VARIANT/"
+  _copy_log_to_run_dir
+  log "Run dir   : results/runs/$TEXTVEC_RUN_ID/"
+}
+
+_copy_log_to_run_dir() {
+  local run_dir="$ROOT/results/runs/$TEXTVEC_RUN_ID/logs"
+  if [[ -f "$LOG_FILE" ]]; then
+    mkdir -p "$run_dir"
+    cp "$LOG_FILE" "$run_dir/$(basename "$LOG_FILE")"
+    log "Log copied : results/runs/$TEXTVEC_RUN_ID/logs/"
+  fi
+}
+
+cmd_runs() {
+  activate_venv
+  python -m textvec --config "$CONFIG" runs
 }
 
 cmd_status() {
@@ -247,18 +266,21 @@ Commands:
   vectorize   All embedding methods (GPU-batched)
   analyze     PCA/UMAP projections + metrics
   all         Run everything in order
+  runs        List all recorded pipeline runs
   status      Show current progress
 
 Environment overrides:
   CONFIG=config/corpus_100k_multilingual.yaml
   VARIANT=abstract
   VENV=$ROOT/.venv
+  TEXTVEC_RUN_ID=YYYYMMDD_HHMMSS   (auto-generated if not set)
   LOG_FILE=path/to/log.log
 
 Examples:
   ./scripts/run_100k_multilingual.sh setup
   ./scripts/run_100k_multilingual.sh all
   ./scripts/run_100k_multilingual.sh vectorize   # resume embeddings only
+  ./scripts/run_100k_multilingual.sh runs        # show run history
   ./scripts/run_100k_multilingual.sh status
 EOF
 }
@@ -273,6 +295,7 @@ main() {
     vectorize)  cmd_vectorize ;;
     analyze)    cmd_analyze ;;
     all)        cmd_all ;;
+    runs)       cmd_runs ;;
     status)     cmd_status ;;
     -h|--help|help|"") usage ;;
     *) die "Unknown command: $cmd. Run with --help." ;;

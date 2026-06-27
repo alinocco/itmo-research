@@ -1,0 +1,31 @@
+{
+  "n_documents": 15431,
+  "by_source": {
+    "arxiv": 9618,
+    "pubmed": 5813
+  },
+  "by_topic": {
+    "machine_learning": 2000,
+    "astrophysics": 2000,
+    "quantitative_biology": 1984,
+    "cardiology": 1951,
+    "oncology": 1938,
+    "neurology": 1924,
+    "cryptography_security": 1873,
+    "computation_language": 1761
+  },
+  "language_sample": {
+    "en": 200
+  },
+  "words": {
+    "min": 12,
+    "max": 1182,
+    "mean": 221.44,
+    "median": 218.0
+  },
+  "chars": {
+    "min": 86,
+    "max": 8804,
+    "mean": 1654.44
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "bert": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.1055,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.7526,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/bert_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/bert_umap.png"
+    }
+  },
+  "bge-m3": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.0713,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.802,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/bge-m3_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/bge-m3_umap.png"
+    }
+  },
+  "doc2vec": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.0025,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.5627,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/doc2vec_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/doc2vec_umap.png"
+    }
+  },
+  "e5": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.1041,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.819,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/e5_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/e5_umap.png"
+    }
+  },
+  "fasttext": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.0704,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.78,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/fasttext_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/fasttext_umap.png"
+    }
+  },
+  "gte": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.1184,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.844,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/gte_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/gte_umap.png"
+    }
+  },
+  "sbert": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.1632,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.849,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/sbert_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/sbert_umap.png"
+    }
+  },
+  "tfidf": {
+    "metrics": {
+      "n_topics": 8,
+      "silhouette_cosine": 0.0785,
+      "silhouette_sample_size": 5000,
+      "knn_topic_purity": 0.7947,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/tfidf_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/abstract/tfidf_umap.png"
+    }
+  }
+}

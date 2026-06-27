@@ -1,0 +1,38 @@
+{
+  "tfidf": {
+    "metrics": {
+      "n_topics": 6,
+      "silhouette_cosine": 0.031,
+      "knn_topic_purity": 0.72,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/tfidf_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/tfidf_umap.png"
+    }
+  },
+  "doc2vec": {
+    "metrics": {
+      "n_topics": 6,
+      "silhouette_cosine": 0.2869,
+      "knn_topic_purity": 0.7587,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/doc2vec_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/doc2vec_umap.png"
+    }
+  },
+  "sbert": {
+    "metrics": {
+      "n_topics": 6,
+      "silhouette_cosine": 0.1968,
+      "knn_topic_purity": 0.8221,
+      "knn_k": 10
+    },
+    "figures": {
+      "pca": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/sbert_pca.png",
+      "umap": "/Users/alinamukhomediarova/Documents/Study/ITMO/Научно-исследовательская работа/Project/results/figures/sbert_umap.png"
+    }
+  }
+}

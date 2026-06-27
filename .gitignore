@@ -141,6 +141,12 @@ results/reports/**
 !results/reports/**/*.md
 !results/reports/**/*.json
 
+# Run registry: commit manifests, READMEs, reports and figures snapshots,
+# but NOT embedding .npy references (binary-adjacent) or raw logs.
+results/runs/**/embeddings.ref.json
+results/runs/**/logs/
+results/logs/
+
 # Models & ML caches
 .cache/
 *.model
